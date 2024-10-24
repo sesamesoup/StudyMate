@@ -1,0 +1,68 @@
+[
+  {
+    "title": "Diode Models and Circuits",
+    "description": "Although still quite small, real diodes exhibit reverse currents that are much larger than IS. A large part of the reverse current is due to leakage effects. These leakage effects are proportional to the junction area A just as IS is.",
+    "dateTime": "2024-10-20T18:06:05.299Z",
+    "username": "janedoe",
+    "subject": "Electrical Engineering",
+    "firstName": "Jane",
+    "lastName": "Doe",
+    "image": [
+      "https://picsum.photos/200",
+      "https://picsum.photos/200"
+    ],
+    "profilePic": "https://avatar.iran.liara.run/public/31"
+  },
+  {
+    "title": "Atomic Orbitals",
+    "description": "Each orbital in an atom is characterized by a set of values of three quantum numbers n, ℓ, and mℓ, which respectively correspond to electron's energy, its orbital angular momentum, and its orbital angular momentum projected along a chosen axis (magnetic quantum number). The orbitals with a well-defined magnetic quantum number are generally complex-valued. Real-valued orbitals can be formed as linear combinations of mℓ and −mℓ orbitals, and are often labeled using associated harmonic polynomials (e.g., xy, x2 − y2) which describe their angular structure.",
+    "dateTime": "2024-10-20T16:06:05.299Z",
+    "username": "johndoe",
+    "subject": "Physics",
+    "firstName": "John",
+    "lastName": "Doe",
+    "image": [],
+    "profilePic": "https://avatar.iran.liara.run/public/85"
+  },
+  {
+    "title": "Zeroth Law of Thermodynamics",
+    "description": "The zeroth law of thermodynamics is one of the four principal laws of thermodynamics. It provides an independent definition of temperature without reference to entropy, which is defined in the second law. The law was established by Ralph H. Fowler in the 1930s, long after the first, second, and third laws had been widely recognized.",
+    "dateTime": "2024-10-20T12:06:05.299Z",
+    "username": "padams",
+    "subject": "Biochemistry",
+    "firstName": "Peter",
+    "lastName": "Adams",
+    "image": [
+      "https://picsum.photos/200"
+    ],
+    "profilePic": "https://avatar.iran.liara.run/public/82"
+  },
+  {
+    "title": "Derivatives",
+    "description": "In mathematics, the derivative is a fundamental tool that quantifies the sensitivity of change of a function's output with respect to its input. The derivative of a function of a single variable at a chosen input value, when it exists, is the slope of the tangent line to the graph of the function at that point. The tangent line is the best linear approximation of the function near that input value. For this reason, the derivative is often described as the instantaneous rate of change, the ratio of the instantaneous change in the dependent variable to that of the independent variable.[1] The process of finding a derivative is called differentiation.",
+    "dateTime": "2024-10-29T13:02:07.299Z",
+    "username": "kjohnson",
+    "subject": "Mathematics",
+    "firstName": "Kim",
+    "lastName": "Johnson",
+    "image": [
+      "https://picsum.photos/200",
+      "https://picsum.photos/200",
+      "https://picsum.photos/200"
+    ],
+    "profilePic": "https://avatar.iran.liara.run/public/15"
+  },
+  {
+    "title": "Form and arch structures",
+    "description": "The structural engineering is an essential component of Architecture. The creativity and imagination of an architect come to reality by adopting a suitable structural system. Architects should understand the basic principles and concepts of structure in order to apply the structural system suitably. It is also needed for an Architect to communicate effectively with consultants and contractors about the conceived structural system.",
+    "dateTime": "2024-10-18T11:08:12.299Z",
+    "username": "wwhite",
+    "subject": "Architecture",
+    "firstName": "Walter",
+    "lastName": "White",
+    "image": [
+      "https://picsum.photos/200"
+    ],
+    "profilePic": "https://avatar.iran.liara.run/public/63"
+  }
+]

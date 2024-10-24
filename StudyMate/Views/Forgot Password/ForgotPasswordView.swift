@@ -7,81 +7,94 @@
 
 import SwiftUI
 
-struct PasswordPath: View {
-    var body: some View {
-        Path { path in
-            //Top left
-            path.move(to: CGPoint(x: 0, y: 0))
-            //Left vertical bound
-            path.addLine(to: CGPoint(x: 0, y: 475))
-            //Curve
-            path.addCurve(to: CGPoint(x: 450, y: 420), control1: CGPoint(x: 200, y: 375), control2: CGPoint(x: 250, y: 620))
-            //Right vertical bound
-            path.addLine(to: CGPoint(x: 500, y: 0))
-        }
-        .fill(.customPink)
-        .edgesIgnoringSafeArea(.top)
-        
-    }
-}
-
 struct ForgotPasswordView: View {
-    @State private var username: String = ""
-    @State private var password: String = ""
-    
+    @State private var email: String = ""
+    @Environment(\.dismiss) var dismiss
+    @State private var showAlert = false
+
     var body: some View {
         ZStack {
-            Color.white.edgesIgnoringSafeArea(.all)
-            PasswordPath()
-            VStack {
+            Color.lightBlue
+                .ignoresSafeArea()
+            
+            
+            VStack(spacing: 40) {
                 Spacer()
-                    .frame(height: 10)
-
-                VStack(spacing: 30) {
-                    Text("Forgot your password?")
-                        .font(.custom("AveriaGruesaLibre-Regular", size: 48))
-                        .foregroundStyle(.customBlue)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .padding(.top, 30)
-                    Text("No worries! Just enter the email address associated with your account and we’ll send you a link to reset you password.")
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .fontWeight(.medium)
-                        .tracking(0.5)
-                }
-
-                
+                Image("collab3")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 175)
                 
                 Spacer()
-                    .frame(height: 250)
                 
-                
-                VStack(spacing: 50) {
-                    TextField("Email", text: $username)
-                        .padding()
-                        .frame(maxWidth: .infinity, alignment: .center)
-                        .background(.white)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 16)
-                                .stroke(Color.gray)
-                        )
-                    
-                    Button(action: {
-                        print("Submit")
-                    }) {
-                        Text("Submit")
-                            .bold()
-                            .padding()
-                            .frame(maxWidth: .infinity, alignment: .center)
-                            .background(.customBlue)
-                            .foregroundStyle(.customPink)
-                            .clipShape(.capsule)
+                VStack(alignment: .leading, spacing: 50) {
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("Forgot your password?")
+                            .font(.custom("InstrumentSerif-Regular", size: 40))
+                        
+                        Text("No worries! Just enter the email address associated with your account and we’ll send you a link to reset your password.")
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                     
+                    VStack(spacing: 30) {
+                        TextField("Email", text: $email)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(.white)
+                            .cornerRadius(16)
+                        
+                        NavigationLink(destination: ResetPasswordView()) {
+                            Text("Submit")
+                                .bold()
+                                .padding()
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                .background(.forest)
+                                .foregroundStyle(.beige)
+                                .cornerRadius(16)
+                        }
+                        
+//                        Button(action: {
+//                            if (email == ""){
+//                                showAlert = true
+//                            }
+//                        }) {
+//                            Text("Submit")
+//                                .bold()
+//                                .padding()
+//                                .frame(maxWidth: .infinity, alignment: .center)
+//                                .background(.forest)
+//                                .foregroundStyle(.beige)
+//                                .cornerRadius(16)
+//                        }
+//                        .alert(isPresented: $showAlert) {
+//                            Alert(title: Text("Invalid Input"), message: Text("Please enter a valid email."), dismissButton: .default(Text("OK")))
+//                        }
+                    
+                    }
+                    
+                    Spacer()
                 }
-                Spacer()
+                
             }
-            .frame(maxWidth: 325)
+            .navigationBarBackButtonHidden(true)
+                    .toolbar {
+                        ToolbarItem(placement: .topBarLeading) {
+                            Button(action: {
+                                dismiss()
+                            }) {
+                                HStack(spacing: 10) {
+                                    Image(systemName: "arrow.left")
+                                        .foregroundStyle(.forest)
+                                    
+                                    Text("Back")
+                                        .foregroundStyle(.forest)
+                                }
+
+                            }
+                        }
+                    }
+            .padding(30)
+            
         }
     }
 }
