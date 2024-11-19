@@ -31,7 +31,7 @@ struct MorePostsView: View {
                         .font(.custom("InstrumentSerif-Regular", size: 48))
                     
                     
-                    Text("Find more posts by filtering by major and post title.")
+                    Text("Find more posts by filtering by subject and post title.")
                     
                 }
                 
@@ -123,7 +123,7 @@ struct MorePostsView: View {
                             Text("Subject")
                                 .fontWeight(.semibold)
     
-                            Picker("Select Major", selection: $majorSelection)
+                            Picker("Select Subject", selection: $majorSelection)
                             {
                                 Text("Please Select One").tag(String?.none)
     

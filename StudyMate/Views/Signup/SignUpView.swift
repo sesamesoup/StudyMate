@@ -74,12 +74,20 @@ struct NameView: View {
             }
             
             VStack(spacing: 20) {
+                Text("First Name")
+                    .fontWeight(.semibold)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
                 TextField("First Name", text: $personal.firstName)
                     .frame(maxWidth: .infinity)
                     .padding()
                     .background(.white)
                     .cornerRadius(16)
                 
+                Text("Last Name")
+                    .fontWeight(.semibold)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
                 TextField("Last Name", text: $personal.lastName)
                     .frame(maxWidth: .infinity)
                     .padding()
@@ -106,17 +114,29 @@ struct LoginView: View {
             
             
             VStack(spacing: 20) {
+                Text("Username")
+                    .fontWeight(.semibold)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                
                 TextField("Username", text: $credentials.username)
                     .frame(maxWidth: .infinity)
                     .padding()
                     .background(.white)
                     .cornerRadius(16)
                 
+                Text("Password")
+                    .fontWeight(.semibold)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                
                 SecureField("Password", text: $credentials.password)
                     .frame(maxWidth: .infinity)
                     .padding()
                     .background(.white)
                     .cornerRadius(16)
+                
+                Text("Confirm Password")
+                    .fontWeight(.semibold)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 
                 SecureField("Confirm Password", text: $credentials.confirmPassword)
                     .textContentType(.newPassword)
@@ -145,6 +165,10 @@ struct AcademicView: View {
             
             
             VStack(alignment: .leading, spacing: 20) {
+                Text("Year")
+                    .fontWeight(.semibold)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                
                 Picker("-- Select a year --", selection: $academic.year) {
                     ForEach(years, id: \.self) {
                         Text($0)
@@ -157,6 +181,10 @@ struct AcademicView: View {
                 .background(.white)
                 .cornerRadius(16)
                 
+                
+                Text("Major")
+                    .fontWeight(.semibold)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 
                 Picker("-- Select a major --", selection: $academic.major) {
                     ForEach(majors, id: \.self) {

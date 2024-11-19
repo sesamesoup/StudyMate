@@ -23,8 +23,10 @@ struct SignInView: View {
                     .ignoresSafeArea()
                 VStack(alignment: .center) {
                     Spacer()
-                    
+
                     VStack(spacing: 40) {
+                        Spacer()
+
                         Image("collab")
                             .resizable()
                             .scaledToFit()
@@ -44,33 +46,40 @@ struct SignInView: View {
                     
                     
                     VStack(spacing: 30) {
-                        Button(action: {
-                            showSheet = true
-                        }) {
-                            Text("Sign In")
-                                .bold()
-                                .padding()
-                                .frame(maxWidth: .infinity, alignment: .center)
-                                .background(.beige)
-                                .foregroundStyle(.forest)
-                                .cornerRadius(16)
-                        }
-                        
-                        NavigationLink(destination: MainView()) {
-                            Text("Forgot Password?")
-                                .foregroundStyle(.beige)
-                        }
-                        
-                        
-                        HStack {
-                            Text("Don't have an account?")
-                                .foregroundStyle(.beige)
-                            NavigationLink(destination: SignUpView()) {
-                                Text("Sign Up")
-                                    .foregroundStyle(.beige)
+                        Spacer()
+
+                        VStack(spacing: 30) {
+                            Button(action: {
+                                showSheet = true
+                            }) {
+                                Text("Sign In")
                                     .bold()
+                                    .padding()
+                                    .frame(maxWidth: .infinity, alignment: .center)
+                                    .background(.beige)
+                                    .foregroundStyle(.forest)
+                                    .cornerRadius(16)
+                            }
+                            
+                            NavigationLink(destination: ForgotPasswordView()) {
+                                Text("Forgot your password?")
+                                    .foregroundStyle(.beige)
+                                    .frame(maxWidth: .infinity, alignment: .center)
                             }
                         }
+                            
+                            Spacer()
+                            
+                            HStack {
+                                Text("Don't have an account?")
+                                    .foregroundStyle(.beige)
+                                NavigationLink(destination: SignUpView()) {
+                                    Text("Sign Up")
+                                        .foregroundStyle(.beige)
+                                        .bold()
+                                }
+                            }
+                        
                     }
                     
                     Spacer()

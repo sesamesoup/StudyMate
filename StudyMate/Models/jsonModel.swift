@@ -37,7 +37,7 @@ struct PrevPost: Codable, Identifiable {
     }
 }
 
-var prevPosts: [PrevPost] = load("PrevPosts.json")
+var prevPosts: [PrevPost] = load("prevPosts.json")
 
 
 var postArr: [Post] = load("posts.json")

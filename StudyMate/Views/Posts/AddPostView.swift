@@ -55,14 +55,14 @@ struct AddPostView: View {
                             .background(.customGrey)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 16)
-                                    .stroke(.gray, lineWidth: 1)
+                                    .stroke(.black, lineWidth: 1)
                             )
                         }
                         
                         VStack(alignment: .leading, spacing: 20) {
                             Text("Subject")
                             
-                            Picker("Major", selection: $majorSelection)
+                            Picker("Subject", selection: $majorSelection)
                             {
                                 ForEach(majors, id: \.self) {
                                     Text($0)
@@ -76,7 +76,7 @@ struct AddPostView: View {
                             .background(.customGrey)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 16)
-                                    .stroke(.gray, lineWidth: 1)
+                                    .stroke(.black, lineWidth: 1)
                             )
                         }
                         
@@ -93,7 +93,7 @@ struct AddPostView: View {
                             .background(.customGrey)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 16)
-                                    .stroke(.gray, lineWidth: 1)
+                                    .stroke(.black, lineWidth: 1)
                             )
                         }
                         

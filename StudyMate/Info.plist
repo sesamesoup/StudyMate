@@ -4,13 +4,6 @@
 <dict>
 	<key>UIAppFonts</key>
 	<array>
-		<string>AveriaSerifLibre-Bold.ttf</string>
-		<string>AveriaSerifLibre-BoldItalic.ttf</string>
-		<string>AveriaSerifLibre-Italic.ttf</string>
-		<string>AveriaSerifLibre-Light.ttf</string>
-		<string>AveriaSerifLibre-LightItalic.ttf</string>
-		<string>AveriaSerifLibre-Regular.ttf</string>
-		<string>AveriaGruesaLibre-Regular.ttf</string>
 		<string>InstrumentSerif-Regular.ttf</string>
 		<string>InstrumentSerif-Italic.ttf</string>
 	</array>

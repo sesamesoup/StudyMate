@@ -72,11 +72,11 @@ struct ProfileView: View {
                 
                 //                Spacer()
                 
-                VStack(spacing: 14) {
+                VStack(spacing: 20) {
                     
-                    NavigationLink(destination: EditProfileView(major: $major, year: $year, description: $description).navigationBarBackButtonHidden(true)) {
+                    NavigationLink(destination: AccountView().navigationBarBackButtonHidden(true)) {
                         HStack {
-                            Text("Edit Profile")
+                            Text("Account")
                                 .foregroundStyle(.forest)
                                 .fontWeight(.semibold)
                             
@@ -98,14 +98,14 @@ struct ProfileView: View {
                         )
                     }
                     
-                    NavigationLink(destination: EditPersonalInfoView(firstName: $firstName, lastName: $lastName, username: $username, password: $password, confirmPassword: $confirmPassword, email: $email).navigationBarBackButtonHidden(true)) {
+                    NavigationLink(destination: PostHistoryView().navigationBarBackButtonHidden(true)) {
                         HStack {
-                            Text("Personal Information")
+                            Text("Post History")
                                 .foregroundStyle(.forest)
                                 .fontWeight(.semibold)
                             
                             Spacer()
-                            
+
                             Image(systemName: "chevron.right")
                                 .padding(6)
                                 .foregroundStyle(.black)
@@ -121,7 +121,6 @@ struct ProfileView: View {
                                 .stroke(.gray, lineWidth: 1)
                         )
                     }
-                    
                     NavigationLink(destination: SignInView().navigationBarBackButtonHidden(true)) {
                         Text("Log Out")
                             .foregroundStyle(.beige)
