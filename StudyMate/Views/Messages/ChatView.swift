@@ -8,6 +8,18 @@
 import SwiftUI
 import PhotosUI
 
+struct CustomFrameModifier : ViewModifier {
+    var from : String
+    
+    @ViewBuilder func body(content: Content) -> some View {
+        if from  == "self" {
+            content.frame(maxWidth: 400, alignment: .trailing)
+        } else {
+            content.frame(maxWidth: 400, alignment: .leading)
+        }
+    }
+}
+
 struct ChatView: View {
     var chat: ChatElement
     @Environment(\.dismiss) var dismiss
@@ -109,10 +121,12 @@ struct ChatView: View {
                                             .font(.system(size: 14))
                                             .foregroundStyle(.gray)
                                     }
-                                    .frame(maxWidth: 500, alignment: .leading)
+//                                    .frame(maxWidth: 500, alignment: .leading)
                                     .padding()
                                     .background(msg.from == "self" ? .lightGreen : .lightBlue)
                                     .cornerRadius(16)
+                                    .modifier(CustomFrameModifier(from: msg.from))
+
                                 }
                             }
                         }
