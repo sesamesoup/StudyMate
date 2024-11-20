@@ -12,6 +12,7 @@ struct ProfileView: View {
     @State private var lastName = "Doe"
     @State private var major = majors[0]
     @State private var year = years[1]
+    @State private var profileIcon = "girl1"
     @State private var email = "janedoe@mail.com"
     @State private var description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
     @State private var username = "janedoe"
@@ -30,7 +31,7 @@ struct ProfileView: View {
                                  style: .continuous)
                 .aspectRatio(1.4, contentMode: .fill)
                 .overlay(
-                    Image("profile")
+                    Image(profileIcon)
                         .resizable()
                         .scaledToFill()
                         .offset(x: -30.0, y: 20.0)
@@ -74,7 +75,7 @@ struct ProfileView: View {
                 
                 VStack(spacing: 20) {
                     
-                    NavigationLink(destination: AccountView().navigationBarBackButtonHidden(true)) {
+                    NavigationLink(destination: AccountView(profileIcon: $profileIcon).navigationBarBackButtonHidden(true)) {
                         HStack {
                             Text("Account")
                                 .foregroundStyle(.forest)
@@ -94,7 +95,7 @@ struct ProfileView: View {
                         .background(.customGrey)
                         .overlay(
                             RoundedRectangle(cornerRadius: 16)
-                                .stroke(.gray, lineWidth: 1)
+                                .strokeBorder(.gray, lineWidth: 1)
                         )
                     }
                     

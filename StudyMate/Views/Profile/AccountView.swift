@@ -12,6 +12,8 @@ struct AccountView: View {
     @Environment(\.dismiss) var dismiss
     
  
+    @Binding var profileIcon: String
+    
     @State private var firstName = "Jane"
     @State private var lastName = "Doe"
     @State private var major = majors[0]
@@ -39,8 +41,10 @@ struct AccountView: View {
                     Spacer()
                         .frame(height: 50)
                     
+                    
+                    
                     VStack(spacing: 25) {
-                        NavigationLink(destination: EditProfileView(major: $major, year: $year, description: $description).navigationBarBackButtonHidden(true)) {
+                        NavigationLink(destination: EditProfileView(major: $major, year: $year, description: $description, profileIcon: $profileIcon).navigationBarBackButtonHidden(true)) {
                             HStack {
                                 Text("Edit Profile")
                                     .foregroundStyle(.forest)
@@ -59,7 +63,7 @@ struct AccountView: View {
                             .background(.customGrey)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 16)
-                                    .stroke(.gray, lineWidth: 1)
+                                    .strokeBorder(.gray, lineWidth: 1)
                             )
                         }
                         
@@ -82,7 +86,7 @@ struct AccountView: View {
                             .background(.customGrey)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 16)
-                                    .stroke(.gray, lineWidth: 1)
+                                    .strokeBorder(.gray, lineWidth: 1)
                             )
                         }
                     }
@@ -115,6 +119,6 @@ struct AccountView: View {
     }
 }
 
-#Preview {
-    AccountView()
-}
+//#Preview {
+//    AccountView()
+//}

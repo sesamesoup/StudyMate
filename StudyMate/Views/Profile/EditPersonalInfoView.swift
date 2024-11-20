@@ -32,7 +32,7 @@ struct EditPersonalInfoView: View {
             VStack(spacing: 40) {
             
                 VStack(alignment: .center, spacing: 50) {
-                    VStack(alignment: .leading, spacing: 14) {
+                    VStack(alignment: .leading, spacing: 22) {
                         
                         Text("First Name")
                             .fontWeight(.bold)
@@ -42,7 +42,7 @@ struct EditPersonalInfoView: View {
                             .background(.customGrey)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 16)
-                                    .stroke(.gray, lineWidth: 1)
+                                    .strokeBorder(.gray, lineWidth: 1)
                             )
                         
                         Text("Last Name")
@@ -53,7 +53,7 @@ struct EditPersonalInfoView: View {
                             .background(.customGrey)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 16)
-                                    .stroke(.gray, lineWidth: 1)
+                                    .strokeBorder(.gray, lineWidth: 1)
                             )
                         
                         Text("Email")
@@ -64,7 +64,7 @@ struct EditPersonalInfoView: View {
                             .background(.customGrey)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 16)
-                                    .stroke(.gray, lineWidth: 1)
+                                    .strokeBorder(.gray, lineWidth: 1)
                             )
                         
                         
@@ -76,7 +76,7 @@ struct EditPersonalInfoView: View {
                             .background(.customGrey)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 16)
-                                    .stroke(.gray, lineWidth: 1)
+                                    .strokeBorder(.gray, lineWidth: 1)
                             )
                         
                         Text("Password")
@@ -87,7 +87,7 @@ struct EditPersonalInfoView: View {
                             .background(.customGrey)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 16)
-                                    .stroke(.gray, lineWidth: 1)
+                                    .strokeBorder(.gray, lineWidth: 1)
                             )
                         
                         Text("Confirm Password")
@@ -98,7 +98,7 @@ struct EditPersonalInfoView: View {
                             .background(.customGrey)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 16)
-                                    .stroke(.gray, lineWidth: 1)
+                                    .strokeBorder(.gray, lineWidth: 1)
                             )
                     }
                     

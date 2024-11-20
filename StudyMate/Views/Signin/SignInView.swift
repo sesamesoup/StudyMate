@@ -73,7 +73,7 @@ struct SignInView: View {
                             HStack {
                                 Text("Don't have an account?")
                                     .foregroundStyle(.beige)
-                                NavigationLink(destination: SignUpView()) {
+                                NavigationLink(destination: MainView()) {
                                     Text("Sign Up")
                                         .foregroundStyle(.beige)
                                         .bold()
@@ -96,7 +96,7 @@ struct SignInView: View {
                                 .cornerRadius(16)
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 16)
-                                        .stroke(emailError != "" ? .red : .forest, lineWidth: 1)
+                                        .strokeBorder(emailError != "" ? .red : .forest, lineWidth: 1)
                                 )
                             
                             SecureField("Password", text: $password)
@@ -105,7 +105,7 @@ struct SignInView: View {
                                 .cornerRadius(16)
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 16)
-                                        .stroke(passwordError != "" ? .red : .forest, lineWidth: 1)
+                                        .strokeBorder(passwordError != "" ? .red : .forest, lineWidth: 1)
                                 )
                         }
                         Button(action: {

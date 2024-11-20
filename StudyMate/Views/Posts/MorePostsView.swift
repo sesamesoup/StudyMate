@@ -139,7 +139,7 @@ struct MorePostsView: View {
                             .cornerRadius(16)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 16)
-                                    .stroke(Color.forest)
+                                    .strokeBorder(Color.forest)
                             )
                         }
                         
@@ -156,7 +156,7 @@ struct MorePostsView: View {
                                 .cornerRadius(16)
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 16)
-                                        .stroke(.forest, lineWidth: 1)
+                                        .strokeBorder(.forest, lineWidth: 1)
                                 )
                         }
                         

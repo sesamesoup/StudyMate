@@ -55,7 +55,7 @@ struct AddPostView: View {
                             .background(.customGrey)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 16)
-                                    .stroke(.black, lineWidth: 1)
+                                    .strokeBorder(.black, lineWidth: 1)
                             )
                         }
                         
@@ -76,7 +76,7 @@ struct AddPostView: View {
                             .background(.customGrey)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 16)
-                                    .stroke(.black, lineWidth: 1)
+                                    .strokeBorder(.black, lineWidth: 1)
                             )
                         }
                         
@@ -93,7 +93,7 @@ struct AddPostView: View {
                             .background(.customGrey)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 16)
-                                    .stroke(.black, lineWidth: 1)
+                                    .strokeBorder(.black, lineWidth: 1)
                             )
                         }
                         

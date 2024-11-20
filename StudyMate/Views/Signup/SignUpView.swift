@@ -19,6 +19,10 @@ struct Credentials {
     var confirmPassword: String = ""
 }
 
+struct ProfileIcon {
+    var profilePicString: String = ""
+}
+
 struct Academic {
     var major: String = majors[0]
     var year: String = "Sophomore"
@@ -28,25 +32,29 @@ struct NewUserData {
     var personal: Personal = Personal()
     var credentials: Credentials = Credentials()
     var academic: Academic = Academic()
+    var pfp: ProfileIcon = ProfileIcon()
 }
 
 enum Steps {
     case personal
     case login
     case academic
+    case pfp
     
     var title: String {
         switch self {
         case .personal: return "Personal"
         case .login: return "Login"
         case .academic: return "Academic"
+        case .pfp: return "Profile Picture"
         }
     }
     
     var next: Steps? {
         switch self {
         case .personal: return .login
-        case .login: return .academic
+        case .login: return .pfp
+        case .pfp: return .academic
         case .academic: return nil
         }
     }
@@ -55,7 +63,8 @@ enum Steps {
         switch self {
         case .personal: return nil
         case .login: return .personal
-        case .academic: return .login
+        case .pfp: return .login
+        case .academic: return .pfp
         }
     }
 }
@@ -77,7 +86,7 @@ struct NameView: View {
                 Text("First Name")
                     .fontWeight(.semibold)
                     .frame(maxWidth: .infinity, alignment: .leading)
-
+                
                 TextField("First Name", text: $personal.firstName)
                     .frame(maxWidth: .infinity)
                     .padding()
@@ -87,7 +96,7 @@ struct NameView: View {
                 Text("Last Name")
                     .fontWeight(.semibold)
                     .frame(maxWidth: .infinity, alignment: .leading)
-
+                
                 TextField("Last Name", text: $personal.lastName)
                     .frame(maxWidth: .infinity)
                     .padding()
@@ -203,6 +212,59 @@ struct AcademicView: View {
     }
 }
 
+struct PictureView: View {
+    @State private var imgArr: [[String]] = [["girl1", "girl2", "girl3"], ["girl4", "girl5", "girl6"], ["guy1", "guy2", "guy3"], ["guy4", "guy5", "guy6"]]
+    
+    @Binding var profileIcon: ProfileIcon
+    @Binding var showAlert: Bool
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 50) {
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Profile Picture")
+                    .font(.custom("InstrumentSerif-Regular", size: 40))
+                
+                Text("Please choose a profile picture.")
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            
+            ScrollView {
+                VStack(spacing: 20) {
+                    ForEach(imgArr, id: \.self) { arr in
+                        HStack(spacing: 20) {
+                            ForEach(arr, id: \.self) { img in
+                                Button {
+                                    profileIcon.profilePicString = img
+                                } label: {
+                                    RoundedRectangle(cornerRadius: 32,
+                                                     style: .continuous)
+                                    .aspectRatio(1.4, contentMode: .fill)
+                                    .overlay(
+                                        Image(img)
+                                            .resizable()
+                                            .scaledToFill()
+                                            .offset(x: -20.0, y: 15.0)
+
+                                    )
+                                    .frame(width: 100, height: 100, alignment: .leading)
+                                    .clipShape(RoundedRectangle(cornerRadius: 32, style: .continuous))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 32)
+                                            .strokeBorder(profileIcon.profilePicString != img ? Color.clear : Color.forest, lineWidth: 4)
+
+                                    )
+                                    
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity)
+        }
+    }
+}
+
 struct SignUpView: View {
     @State private var userObj = NewUserData()
     @State private var currentStep: Steps = .personal
@@ -244,22 +306,20 @@ struct SignUpView: View {
                             .fill(.forest)
                             .frame(maxWidth: 100, maxHeight: 3)
                         RoundedRectangle(cornerRadius: 25)
-                            .fill(currentStep == .login || currentStep == .academic ? .forest : .gray)
+                            .fill(currentStep == .login || currentStep == .academic || currentStep == .pfp ? .forest : .gray)
+                            .frame(maxWidth: 100, maxHeight: 3)
+                        RoundedRectangle(cornerRadius: 25)
+                            .fill(currentStep == .login || currentStep == .academic || currentStep == .pfp ? .forest : .gray)
                             .frame(maxWidth: 100, maxHeight: 3)
                         RoundedRectangle(cornerRadius: 25)
                             .fill(currentStep == .academic ? .forest : .gray)
                             .frame(maxWidth: 100, maxHeight: 3)
                     }
-                   
+                    
                 }
-                Spacer()
-//                Image("collab3")
-//                    .resizable()
-//                    .scaledToFit()
-//                    .frame(height: 175)
-//
-//                Spacer()
                 
+                Spacer()
+
                 
                 VStack(spacing: 40) {
                     switch currentStep {
@@ -269,10 +329,14 @@ struct SignUpView: View {
                         LoginView(credentials: $userObj.credentials, showAlert: $showAlert)
                     case .academic:
                         AcademicView(academic: $userObj.academic, showAlert: $showAlert)
+                    case .pfp:
+                        PictureView(profileIcon: $userObj.pfp, showAlert: $showAlert)
                     }
                     
+                    Spacer()
+                    
+                    
                     HStack {
-                        
                         Button(action: {
                             if currentStep.next != nil {
                                 validate()
@@ -299,7 +363,7 @@ struct SignUpView: View {
                                     .background(.forest)
                                     .foregroundStyle(.beige)
                                     .cornerRadius(16)
-
+                                
                             }
                             
                         }
@@ -307,8 +371,8 @@ struct SignUpView: View {
                             Alert(title: Text("Invalid Input"), message: Text(errorMessage), dismissButton: .default(Text("OK")))
                         }
                     }
-                    .frame(maxHeight: .infinity, alignment: .bottom)
-                    
+                    .frame(alignment: .bottom)
+                                        
                 }
             }
             .padding(30)
@@ -346,6 +410,13 @@ struct SignUpView: View {
                 errorMessage = "Please fill out all fields and make sure passwords are the same."
             } else {
                 errorMessage = error1 + error2
+            }
+        }
+        
+        else if currentStep == .pfp {
+            if userObj.pfp.profilePicString == "" {
+                errorMessage = "Please choose a profile picture."
+                hasErrors = true
             }
         }
         

@@ -2,7 +2,7 @@
 //  EditProfileView.swift
 //  StudyMate
 //
-//  Created by Maddie Adair on 10/19/24.
+//  Created by Maddie Adair on 11/19/24.
 //
 
 import SwiftUI
@@ -12,6 +12,7 @@ struct EditProfileView: View {
     @Binding var major: String
     @Binding var year: String
     @Binding var description: String
+    @Binding var profileIcon: String
 
     @State private var showAlert = false
     @State private var alertMessage = ""
@@ -24,26 +25,23 @@ struct EditProfileView: View {
                 .ignoresSafeArea()
             
             VStack(spacing: 40) {
-//                Text("Edit Profile")
-//                    .font(.custom("InstrumentSerif-Regular", size: 48))
-//                    .frame(maxWidth: .infinity, alignment: .leading)
-//                    .padding(.top, 40)
-                
-                RoundedRectangle(cornerRadius: 50,
-                                 style: .continuous)
-                .aspectRatio(1.4, contentMode: .fill)
-                .overlay(
-                    Image("profile")
-                        .resizable()
-                        .scaledToFill()
-                        .offset(x: -30.0, y: 20.0)
-                )
-                .frame(width: 150, height: 150, alignment: .leading)
-                .clipShape(RoundedRectangle(cornerRadius: 50,
-                                            style: .continuous))
+                NavigationLink(destination: EditProfilePicView(profileIcon: $profileIcon)) {
+                    RoundedRectangle(cornerRadius: 50,
+                                     style: .continuous)
+                    .aspectRatio(1.4, contentMode: .fill)
+                    .overlay(
+                        Image("profile")
+                            .resizable()
+                            .scaledToFill()
+                            .offset(x: -30.0, y: 20.0)
+                    )
+                    .frame(width: 150, height: 150, alignment: .leading)
+                    .clipShape(RoundedRectangle(cornerRadius: 50,
+                                                style: .continuous))
+                }
                 
                 VStack(alignment: .center, spacing: 50) {
-                    VStack(alignment: .leading, spacing: 14) {
+                    VStack(alignment: .leading, spacing: 22) {
                         
                         Text("Year")
                             .fontWeight(.bold)
@@ -61,7 +59,7 @@ struct EditProfileView: View {
                         .background(.customGrey)
                         .overlay(
                             RoundedRectangle(cornerRadius: 16)
-                                .stroke(.gray, lineWidth: 1)
+                                .strokeBorder(.gray, lineWidth: 1)
                         )
                         
                         
@@ -81,7 +79,7 @@ struct EditProfileView: View {
                         .background(.customGrey)
                         .overlay(
                             RoundedRectangle(cornerRadius: 16)
-                                .stroke(.gray, lineWidth: 1)
+                                .strokeBorder(.gray, lineWidth: 1)
                         )
                         
                         
@@ -94,7 +92,7 @@ struct EditProfileView: View {
                             .background(.customGrey)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 16)
-                                    .stroke(.gray, lineWidth: 1)
+                                    .strokeBorder(.gray, lineWidth: 1)
                             )
                     }
                     
@@ -140,7 +138,7 @@ struct EditProfileView: View {
         }
     }
 }
-
-#Preview {
-    EditProfileView(major: .constant(majors[0]), year: .constant(years[1]), description: .constant("Lorem ipsum dolor sit amet, consectetur adipiscing elit."))
-}
+//
+//#Preview {
+//    EditProfileView(major: .constant(majors[0]), year: .constant(years[1]), description: .constant("Lorem ipsum dolor sit amet, consectetur adipiscing elit."))
+//}
