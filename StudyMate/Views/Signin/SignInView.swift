@@ -73,7 +73,7 @@ struct SignInView: View {
                             HStack {
                                 Text("Don't have an account?")
                                     .foregroundStyle(.beige)
-                                NavigationLink(destination: MainView()) {
+                                NavigationLink(destination: SignUpView()) {
                                     Text("Sign Up")
                                         .foregroundStyle(.beige)
                                         .bold()
