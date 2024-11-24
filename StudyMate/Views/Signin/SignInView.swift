@@ -26,6 +26,7 @@ struct DrawingPaths: View {
 }
 
 struct SignInView: View {
+    @StateObject private var signInViewModel = SignInEmailViewModel()
     @State private var username: String = ""
     @State private var password: String = ""
     
@@ -75,20 +76,7 @@ struct SignInView: View {
                         
                         VStack(spacing: 40) {
                             
-                            NavigationLink(destination: MainView().navigationBarBackButtonHidden(true)) {
-                                Text("Sign In")
-                                    .bold()
-                                    .padding()
-                                    .frame(maxWidth: .infinity, alignment: .center)
-                                    .background(.customBlue)
-                                    .foregroundStyle(.customPink)
-                                    .clipShape(.capsule)
-                            }
-                            
-                            
-//                            Button(action: {
-//                                print("Sign In")
-//                            }) {
+//                            NavigationLink(destination: MainView().navigationBarBackButtonHidden(true)) {
 //                                Text("Sign In")
 //                                    .bold()
 //                                    .padding()
@@ -97,6 +85,21 @@ struct SignInView: View {
 //                                    .foregroundStyle(.customPink)
 //                                    .clipShape(.capsule)
 //                            }
+                            
+                            
+                            Button(action: {
+                                print("Sign In")
+                                signInViewModel.signIn()
+                                
+                            }) {
+                                Text("Sign In")
+                                    .bold()
+                                    .padding()
+                                    .frame(maxWidth: .infinity, alignment: .center)
+                                    .background(.customBlue)
+                                    .foregroundStyle(.customPink)
+                                    .clipShape(.capsule)
+                            }
                             
                             HStack {
                                 Text("Don't have an account?")
