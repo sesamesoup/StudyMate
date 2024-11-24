@@ -1,0 +1,52 @@
+[
+  {
+    "title": "Diode Models and Circuits",
+    "description": "Although still quite small, real diodes exhibit reverse currents that are much larger than IS. A large part of the reverse current is due to leakage effects. These leakage effects are proportional to the junction area A just as IS is.",
+    "messages": [
+      {
+        "message": "Hi I'm looking for help with this question.",
+        "dateTime": "2024-10-20T16:06:05.299Z"
+      },
+      {
+        "message": "Message #2 goes here",
+        "dateTime": "2024-10-20T18:09:02.299Z"
+      }
+    ],
+    "username": "janedoe",
+    "firstName": "Jane",
+    "lastName": "Doe",
+    "profilePic": "https://avatar.iran.liara.run/public/31"
+  },
+  {
+    "title": "Atomic Orbitals",
+    "description": "Each orbital in an atom is characterized by a set of values of three quantum numbers n, ℓ, and mℓ, which respectively correspond to electron's energy, its orbital angular momentum, and its orbital angular momentum projected along a chosen axis (magnetic quantum number). The orbitals with a well-defined magnetic quantum number are generally complex-valued. Real-valued orbitals can be formed as linear combinations of mℓ and −mℓ orbitals, and are often labeled using associated harmonic polynomials (e.g., xy, x2 − y2) which describe their angular structure.",
+    "messages": [
+      {
+        "message": "Hey! I had a question about this topic.",
+        "dateTime": "2024-10-20T16:06:05.299Z"
+      },
+      {
+        "message": "Message #2 goes here",
+        "dateTime": "2024-10-20T18:09:02.299Z"
+      }
+    ],
+    "username": "johndoe",
+    "firstName": "John",
+    "lastName": "Doe",
+    "profilePic": "https://avatar.iran.liara.run/public/85"
+  },
+  {
+    "title": "Form and arch structures",
+    "description": "The structural engineering is an essential component of Architecture. The creativity and imagination of an architect come to reality by adopting a suitable structural system. Architects should understand the basic principles and concepts of structure in order to apply the structural system suitably. It is also needed for an Architect to communicate effectively with consultants and contractors about the conceived structural system.",
+    "messages": [
+      {
+        "message": "Hi! Are you free right now?",
+        "dateTime": "2024-10-18T11:08:12.299Z"
+      }
+    ],
+    "username": "wwhite",
+    "firstName": "Walter",
+    "lastName": "White",
+    "profilePic": "https://avatar.iran.liara.run/public/63"
+  }
+]

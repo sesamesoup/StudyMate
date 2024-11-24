@@ -2,122 +2,170 @@
 //  SignInView.swift
 //  StudyMate
 //
-//  Created by Maddie Adair on 10/14/24.
+//  Created by Maddie Adair on 10/24/24.
 //
 
 import SwiftUI
 
-struct DrawingPaths: View {
-    var body: some View {
-        Path { path in
-            //Top left
-            path.move(to: CGPoint(x: 0, y: 0))
-            //Left vertical bound
-            path.addLine(to: CGPoint(x: 0, y: 350))
-            //Curve
-            path.addCurve(to: CGPoint(x: 440, y: 300), control1: CGPoint(x: 205, y: 450), control2: CGPoint(x: 250, y: 100))
-            //Right vertical bound
-            path.addLine(to: CGPoint(x: 450, y: 0))
-        }
-        .fill(.customBlue)
-        .edgesIgnoringSafeArea(.top)
-        
-    }
-}
-
 struct SignInView: View {
+
     @StateObject private var signInViewModel = SignInEmailViewModel()
-    @State private var username: String = ""
+    //@State private var username: String = ""
+
+    @State private var email: String = ""
+
     @State private var password: String = ""
+    @State private var showSheet = false
+    @State private var showAlert = false
+    @State private var alertMessage = ""
+    @State private var emailError = ""
+    @State private var passwordError = ""
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
-                Color.customPink.edgesIgnoringSafeArea(.all)
-                DrawingPaths()
-                VStack {
-                    Text("Welcome Back!")
-                        .font(.custom("AveriaGruesaLibre-Regular", size: 60))
-                        .foregroundStyle(.customPink)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.top, 30)
+                Color.forest
+                    .ignoresSafeArea()
+                VStack(alignment: .center) {
+                    Spacer()
+
+                    VStack(spacing: 40) {
+                        Spacer()
+
+                        Image("collab")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(height: 200)
+                        
+                        VStack(spacing: 10) {
+                            Text("Welcome Back!")
+                                .font(.custom("InstrumentSerif-Regular", size: 60))
+                                .foregroundStyle(.beige)
+                            
+                            Text("Nice to see you again.")
+                                .foregroundStyle(.beige)
+                        }
+                    }
                     
                     Spacer()
-                        .frame(height: 220)
                     
                     
-                    VStack {
-                        VStack(spacing: 25) {
-                            VStack(spacing: 15) {
-                                TextField("Email or Username", text: $username)
-                                    .padding()
-                                    .frame(maxWidth: .infinity, alignment: .center)
-                                    .background(.white)
-                                    .cornerRadius(16)
-                                TextField("Password", text: $password)
-                                    .padding()
-                                    .frame(maxWidth: .infinity, alignment: .center)
-                                    .background(.white)
-                                    .cornerRadius(16)
-                            }
-                            
-                            NavigationLink(destination: ForgotPasswordView()) {
-                                Text("Forgot Password?")
-                                    .foregroundStyle(.customBlue)
-                                    .bold()
-                                    .frame(maxWidth: .infinity, alignment: .trailing)
-                            }
-                            
-                        }
-                        
+                    VStack(spacing: 30) {
                         Spacer()
-                            .frame(height: 60)
-                        
-                        
-                        VStack(spacing: 40) {
-                            
-//                            NavigationLink(destination: MainView().navigationBarBackButtonHidden(true)) {
-//                                Text("Sign In")
-//                                    .bold()
-//                                    .padding()
-//                                    .frame(maxWidth: .infinity, alignment: .center)
-//                                    .background(.customBlue)
-//                                    .foregroundStyle(.customPink)
-//                                    .clipShape(.capsule)
-//                            }
-                            
-                            
+
+
+                        VStack(spacing: 30) {
                             Button(action: {
-                                print("Sign In")
+                                showSheet = true
                                 signInViewModel.signIn()
-                                
                             }) {
                                 Text("Sign In")
                                     .bold()
                                     .padding()
                                     .frame(maxWidth: .infinity, alignment: .center)
-                                    .background(.customBlue)
-                                    .foregroundStyle(.customPink)
-                                    .clipShape(.capsule)
+                                    .background(.beige)
+                                    .foregroundStyle(.forest)
+                                    .cornerRadius(16)
                             }
+                            
+                            NavigationLink(destination: ForgotPasswordView()) {
+                                Text("Forgot your password?")
+                                    .foregroundStyle(.beige)
+                                    .frame(maxWidth: .infinity, alignment: .center)
+                            }
+                        }
+                            
+                            Spacer()
                             
                             HStack {
                                 Text("Don't have an account?")
-                                
-                                NavigationLink(destination: CreateAccountView()) {
+                                    .foregroundStyle(.beige)
+                                NavigationLink(destination: SignUpView()) {
                                     Text("Sign Up")
-                                        .foregroundStyle(.customBlue)
+                                        .foregroundStyle(.beige)
                                         .bold()
                                 }
-                                
                             }
+                        
+                    }
+                    
+                    Spacer()
+                    
+                }
+                .padding(30)
+                .sheet(isPresented: $showSheet, onDismiss: { resetFields() }) {
+                    VStack(spacing: 40) {
+                        Spacer()
+                        VStack( alignment: .leading, spacing: 20) {
+                            TextField("Email", text: $email)
+                                .padding()
+                                .background(.white)
+                                .cornerRadius(16)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 16)
+                                        .strokeBorder(emailError != "" ? .red : .forest, lineWidth: 1)
+                                )
+                            
+                            SecureField("Password", text: $password)
+                                .padding()
+                                .background(.white)
+                                .cornerRadius(16)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 16)
+                                        .strokeBorder(passwordError != "" ? .red : .forest, lineWidth: 1)
+                                )
+                        }
+                        Button(action: {
+                            validateLogin()
+                        }) {
+                            Text("Log In")
+                                .bold()
+                                .padding()
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                .background(.forest)
+                                .foregroundStyle(.beige)
+                                .cornerRadius(16)
+                        }
+                        .alert(isPresented: $showAlert) {
+                            Alert(title: Text("Invalid Input"), message: Text("Please fill out all fields."), dismissButton: .default(Text("OK")))
                         }
                     }
-                    Spacer()
+                    .padding()
+                    .presentationBackground(.beige)
+                    //                .interactiveDismissDisabled()
+                    .presentationDetents([.fraction(0.4)])
+                    .presentationCornerRadius(30)
+                    
                 }
-                .frame(maxWidth: 325)
             }
         }
+    }
+    
+    func validateLogin() {
+        if email == "" || password == "" {
+            alertMessage = "Please enter all fields."
+            if email == "" {
+                emailError = "* Required"
+            }
+            if password == "" {
+                passwordError = "* Required"
+            }
+            showAlert = true
+        } else {
+            emailError = ""
+            passwordError = ""
+            showAlert = false
+        }
+    }
+    
+    func resetFields() {
+        email = ""
+        password = ""
+        showSheet = false
+        showAlert = false
+        alertMessage = ""
+        emailError = ""
+        passwordError = ""
     }
 }
 

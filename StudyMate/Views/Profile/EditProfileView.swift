@@ -2,85 +2,143 @@
 //  EditProfileView.swift
 //  StudyMate
 //
-//  Created by Maddie Adair on 10/19/24.
+//  Created by Maddie Adair on 11/19/24.
 //
 
 import SwiftUI
 
 struct EditProfileView: View {
-    @State private var firstName: String = ""
-    @State private var lastName: String = ""
-    @State private var username: String = ""
-    @State private var email: String = ""
-    @State private var password: String = ""
-    @State private var description: String = ""
-    @State private var year: String = ""
-    @State private var major: String = ""
+    @Environment(\.dismiss) var dismiss
+    @Binding var major: String
+    @Binding var year: String
+    @Binding var description: String
+    @Binding var profileIcon: String
 
+    @State private var showAlert = false
+    @State private var alertMessage = ""
+    @State private var emailError = ""
+    @State private var passwordError = ""
+    
     var body: some View {
-        ScrollView {
-            VStack(spacing: 50) {
-                RoundedRectangle(cornerRadius: 80,
-                                 style: .continuous)
-                .aspectRatio(1.35, contentMode: .fill)
-                .overlay(
-                    Image("profilePic")
-                        .resizable()
-                        .scaledToFill()
-                        .offset(x: -50.0, y: 20.0)
-                )
-                .frame(width: 300, height: 300, alignment: .leading)
-                .clipShape(RoundedRectangle(cornerRadius: 80,
-                                            style: .continuous))
+        ZStack {
+            Color.lightBeige
+                .ignoresSafeArea()
+            
+            VStack(spacing: 40) {
+                NavigationLink(destination: EditProfilePicView(profileIcon: $profileIcon)) {
+                    RoundedRectangle(cornerRadius: 50,
+                                     style: .continuous)
+                    .aspectRatio(1.4, contentMode: .fill)
+                    .overlay(
+                        Image("profile")
+                            .resizable()
+                            .scaledToFill()
+                            .offset(x: -30.0, y: 20.0)
+                    )
+                    .frame(width: 150, height: 150, alignment: .leading)
+                    .clipShape(RoundedRectangle(cornerRadius: 50,
+                                                style: .continuous))
+                }
                 
-                VStack(spacing: 20) {
-                    TextField("First Name", text: $firstName)
+                VStack(alignment: .center, spacing: 50) {
+                    VStack(alignment: .leading, spacing: 22) {
+                        
+                        Text("Year")
+                            .fontWeight(.bold)
+                        
+                        Picker("-- Select a year --", selection: $year) {
+                            ForEach(years, id: \.self) {
+                                Text($0)
+                            }
+                        }
+                        .pickerStyle(.menu)
+                        .accentColor(.forest)
+                        .frame(maxWidth: .infinity, maxHeight: 30, alignment: .leading)
                         .padding()
-                        .frame(maxWidth: .infinity, alignment: .center)
-                        .background(.white)
+                        .cornerRadius(16)
+                        .background(.customGrey)
                         .overlay(
                             RoundedRectangle(cornerRadius: 16)
-                                .stroke(Color.gray)
+                                .strokeBorder(.gray, lineWidth: 1)
                         )
-                    TextField("Last Name", text: $lastName)
+                        
+                        
+                        Text("Major")
+                            .fontWeight(.bold)
+
+                        Picker("-- Select a major --", selection: $major) {
+                            ForEach(majors, id: \.self) {
+                                Text($0)
+                            }
+                        }
+                        .pickerStyle(.menu)
+                        .accentColor(.forest)
+                        .frame(maxWidth: .infinity, maxHeight: 30, alignment: .leading)
                         .padding()
-                        .frame(maxWidth: .infinity, alignment: .center)
-                        .background(.white)
+                        .cornerRadius(16)
+                        .background(.customGrey)
                         .overlay(
                             RoundedRectangle(cornerRadius: 16)
-                                .stroke(Color.gray)
+                                .strokeBorder(.gray, lineWidth: 1)
                         )
-                    TextField("Username", text: $username)
+                        
+                        
+                        Text("Description")
+                            .fontWeight(.bold)
+                        TextField("Username", text: $description)
+                            .frame(maxHeight: 100, alignment: .topLeading)
+                            .padding()
+                            .cornerRadius(16)
+                            .background(.customGrey)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 16)
+                                    .strokeBorder(.gray, lineWidth: 1)
+                            )
+                    }
+                    
+                }
+                .frame(maxWidth: .infinity)
+                            
+                Button(action: {
+//                    validateLogin()
+                }) {
+                    Text("Confirm")
+                        .bold()
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .center)
-                        .background(.white)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 16)
-                                .stroke(Color.gray)
-                        )
-                    TextField("Email", text: $email)
-                        .padding()
-                        .frame(maxWidth: .infinity, alignment: .center)
-                        .background(.white)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 16)
-                                .stroke(Color.gray)
-                        )
-                    TextField("Password", text: $password)
-                        .padding()
-                        .frame(maxWidth: .infinity, alignment: .center)
-                        .background(.white)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 16)
-                                .stroke(Color.gray)
-                        )
+                        .background(.forest)
+                        .foregroundStyle(.beige)
+                        .cornerRadius(16)
+                }
+                .alert(isPresented: $showAlert) {
+                    Alert(title: Text("Invalid Input"), message: Text("Please fill out all fields."), dismissButton: .default(Text("OK")))
+                }
+                
+                
+                Spacer()
+            }
+            .navigationBarBackButtonHidden(true)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button(action: {
+                        dismiss()
+                    }) {
+                        HStack(spacing: 10) {
+                            Image(systemName: "arrow.left")
+                                .foregroundStyle(.forest)
+                            
+                            Text("Cancel")
+                                .foregroundStyle(.forest)
+                        }
+                        
+                    }
                 }
             }
+            .padding(30)
         }
-        .padding(.horizontal, 30)
     }
 }
-
-#Preview {
-    EditProfileView()
-}
+//
+//#Preview {
+//    EditProfileView(major: .constant(majors[0]), year: .constant(years[1]), description: .constant("Lorem ipsum dolor sit amet, consectetur adipiscing elit."))
+//}

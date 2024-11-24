@@ -8,31 +8,67 @@
 import SwiftUI
 
 struct MainView: View {
+    @State private var activeTabIndex = 0
+    
     var body: some View {
+        
         VStack {
-            TabView {
+            TabView(selection: $activeTabIndex) {
                 HomeView()
                     .tabItem {
-                        Image(systemName: "house")
-                    }
+                        if (activeTabIndex == 0){
+                            Image(systemName: "house.fill")
+                                .environment(\.symbolVariants, .none)
+                        } else {
+                            Image(systemName: "house")
+                                .environment(\.symbolVariants, .none)
+                        }
+                    }.tag(0)
+                    .onAppear { self.activeTabIndex = 0 }
+                
                 
                 NotificationsView()
                     .tabItem {
-                        Image(systemName: "star")
-                    }
-
-                MessagesView()
-                    .tabItem {
-                        Image(systemName: "message")
-                    }
+                        if (activeTabIndex == 1){
+                            Image(systemName: "bell.fill")
+                                .environment(\.symbolVariants, .none)
+                        } else {
+                            Image(systemName: "bell")
+                                .environment(\.symbolVariants, .none)
+                        }
+                    }.tag(1)
+                    .onAppear { self.activeTabIndex = 1 }
                 
-                ProfileView(name: "Jane Doe", username: "janedoe", major: "Architecture", year: "Sophomore", description: "Some description about yourself")
+                InboxView()
                     .tabItem {
-                        Image(systemName: "person.fill")
-                    }
+                        if (activeTabIndex == 2){
+                            Image(systemName: "message.fill")
+                                .environment(\.symbolVariants, .none)
+                        } else {
+                            Image(systemName: "message")
+                                .environment(\.symbolVariants, .none)
+                        }
+                    }.tag(2)
+                    .onAppear { self.activeTabIndex = 2 }
+                
+                ProfileView()
+                    .tabItem {
+                        if (activeTabIndex == 3){
+                            Image(systemName: "person.fill")
+                                .environment(\.symbolVariants, .none)
+                        } else {
+                            Image(systemName: "person")
+                                .environment(\.symbolVariants, .none)
+                        }
+                    }.tag(3)
+                    .onAppear { self.activeTabIndex = 3 }
             }
+            .accentColor(.forest)
         }
+        .navigationBarBackButtonHidden(true)
+
     }
+
 }
 
 #Preview {
