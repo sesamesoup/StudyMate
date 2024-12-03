@@ -6,12 +6,15 @@
 //
 
 import SwiftUI
+// Data Structure
 
+// Screen 1
 struct Personal {
     var firstName: String = ""
     var lastName: String = ""
 }
 
+// Screen 2
 struct Credentials {
     var username: String = ""
     var email: String = ""
@@ -19,15 +22,18 @@ struct Credentials {
     var confirmPassword: String = ""
 }
 
+// Screen 3
 struct ProfileIcon {
     var profilePicString: String = ""
 }
 
+// Screen 4
 struct Academic {
     var major: String = majors[0]
     var year: String = "Sophomore"
 }
 
+// togther
 struct NewUserData {
     var personal: Personal = Personal()
     var credentials: Credentials = Credentials()
@@ -68,7 +74,7 @@ enum Steps {
         }
     }
 }
-
+// View models -------------------------------------------
 struct NameView: View {
     @Binding var personal: Personal
     @Binding var showAlert: Bool
@@ -128,6 +134,15 @@ struct LoginView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 
                 TextField("Username", text: $credentials.username)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(.white)
+                    .cornerRadius(16)
+                Text("Email")
+                    .fontWeight(.semibold)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                
+                TextField("Email", text: $credentials.email)
                     .frame(maxWidth: .infinity)
                     .padding()
                     .background(.white)
@@ -265,7 +280,12 @@ struct PictureView: View {
     }
 }
 
+
+// Main Sign Uew View
 struct SignUpView: View {
+    //
+    @StateObject private var signInViewModel = SignInEmailViewModel()
+    //
     @State private var userObj = NewUserData()
     @State private var currentStep: Steps = .personal
     @State private var showAlert = false
@@ -355,8 +375,18 @@ struct SignUpView: View {
                                 }
                                 
                                 
-                            } else if currentStep.next != nil {
+                            } else if currentStep.next != nil && currentStep != .login {
                                 Text("Next")
+                                    .frame(maxWidth: .infinity, alignment: .bottom)
+                                    .bold()
+                                    .padding()
+                                    .background(.forest)
+                                    .foregroundStyle(.beige)
+                                    .cornerRadius(16)
+                                
+                            }
+                            else if currentStep == .login {
+                                Text("Sign Up")
                                     .frame(maxWidth: .infinity, alignment: .bottom)
                                     .bold()
                                     .padding()
@@ -385,33 +415,86 @@ struct SignUpView: View {
         errorMessage = ""
         
         var hasErrors = false
-        
+        // Personal view
         if currentStep == .personal {
+            userObj.personal.firstName = userObj.personal.firstName.trimmingCharacters(in: .whitespacesAndNewlines)
+            userObj.personal.lastName = userObj.personal.lastName.trimmingCharacters(in: .whitespacesAndNewlines)
+            
+            // if empty
             if userObj.personal.firstName == "" || userObj.personal.lastName == "" {
                 errorMessage = "Please fill out all fields."
-                hasErrors = true
+                //hasErrors = true
+                showAlert = true
+                return
+                //return
+            }
+            // Validate first name
+            else if !isValidName(userObj.personal.firstName) {
+                errorMessage = "First name must contain only alphabetic characters."
+                //hasErrors = true
+                showAlert = true
+                return
+            }
+            
+            // Validate last name
+            else if !isValidName(userObj.personal.lastName) {
+                errorMessage = "Last name must contain only alphabetic characters."
+                showAlert = true
+                return
             }
         }
         
+        // Login View
         else if currentStep == .login {
-            var error1 = ""
-            var error2 = ""
+            // Removing whitespaces
+            userObj.credentials.username = userObj.credentials.username.trimmingCharacters(in: .whitespacesAndNewlines)
+            userObj.credentials.password = userObj.credentials.password.trimmingCharacters(in: .whitespacesAndNewlines)
+            userObj.credentials.confirmPassword = userObj.credentials.confirmPassword.trimmingCharacters(in: .whitespacesAndNewlines)
+            userObj.credentials.email = userObj.credentials.email.trimmingCharacters(in: .whitespacesAndNewlines)
             
-            if (userObj.credentials.username == "" || userObj.credentials.password == "" || userObj.credentials.confirmPassword == "") {
-                error1 = "Please fill out all fields."
+            // Check for empty fields
+            if userObj.credentials.username.isEmpty ||
+                userObj.credentials.password.isEmpty ||
+                userObj.credentials.confirmPassword.isEmpty ||
+                userObj.credentials.email.isEmpty {
+                errorMessage = "Please fill out all fields."
+                showAlert = true
                 hasErrors = true
+                return
             }
-            if userObj.credentials.password != userObj.credentials.confirmPassword {
-                error2 = "Passwords do not match."
-                hasErrors = true
+            // Validating email
+            else if !isValidEmail(userObj.credentials.email) {
+                errorMessage = "Invalid email format"
+                showAlert = true
+                return
             }
             
-            if (error1 != "" && error2 != ""){
-                errorMessage = "Please fill out all fields and make sure passwords are the same."
-            } else {
-                errorMessage = error1 + error2
+            // Validate password
+            else if let passwordError = validatePassword(userObj.credentials.password) {
+                errorMessage = passwordError
+                showAlert = true
+                hasErrors = true
+                return
             }
+            
+            // Check if passwords match
+            else if userObj.credentials.password != userObj.credentials.confirmPassword {
+                errorMessage = "Passwords do not match."
+                showAlert = true
+                hasErrors = true
+                return
+            }
+            
+            // all is validate
+            signInViewModel.email = userObj.credentials.email
+            signInViewModel.password = userObj.credentials.password
+            // if return true go to the next one else show error message
+            signInViewModel.signIn()
+            // add user to the user table
+            
+            // call the auth
         }
+
         
         else if currentStep == .pfp {
             if userObj.pfp.profilePicString == "" {
@@ -429,8 +512,55 @@ struct SignUpView: View {
             }
         }
     }
-}
+    // Validate name
+    func isValidName(_ name: String) -> Bool {
+        let nameRegex = "^[A-Za-z]+$"
+        return NSPredicate(format: "SELF MATCHES %@", nameRegex).evaluate(with: name)
+    }
+    // Fucntion to validate email
+    func isValidEmail(_ email: String) -> Bool {
+        let emailRegex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"
+        return NSPredicate(format: "SELF MATCHES %@", emailRegex).evaluate(with: email)
+    }
+    // Fucntion to validate password
+    func validatePassword(_ password: String) -> String? {
+        // Check password length (minimum 8 characters)
+        if password.count < 8 {
+            return "Password must be at least 8 characters long."
+        }
+        
+        // Check for at least one uppercase letter
+        let uppercaseLetterRegex = ".*[A-Z]+.*"
+        if !NSPredicate(format: "SELF MATCHES %@", uppercaseLetterRegex).evaluate(with: password) {
+            return "Password must contain at least one uppercase letter."
+        }
+        
+        // Check for at least one lowercase letter
+        let lowercaseLetterRegex = ".*[a-z]+.*"
+        if !NSPredicate(format: "SELF MATCHES %@", lowercaseLetterRegex).evaluate(with: password) {
+            return "Password must contain at least one lowercase letter."
+        }
+        
+        // Check for at least one number
+        let numberRegex = ".*[0-9]+.*"
+        if !NSPredicate(format: "SELF MATCHES %@", numberRegex).evaluate(with: password) {
+            return "Password must contain at least one number."
+        }
+        
+        // Check for at least one special character
+        let specialCharacterRegex = ".*[!@#$%^&*(),.?\":{}|<>]+.*"
+        if !NSPredicate(format: "SELF MATCHES %@", specialCharacterRegex).evaluate(with: password) {
+            return "Password must contain at least one special character."
+        }
+        
+        // Password is valid
+        return nil
+    }
 
+
+}
+// View models end -------------------------------------------
+// Preview
 #Preview {
     SignUpView()
 }

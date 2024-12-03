@@ -9,7 +9,7 @@ import SwiftUI
 
 struct SignInView: View {
 
-    @StateObject private var signInViewModel = SignInEmailViewModel()
+    //@StateObject private var signInViewModel = SignInEmailViewModel()
     //@State private var username: String = ""
 
     @State private var email: String = ""
@@ -57,9 +57,9 @@ struct SignInView: View {
                         VStack(spacing: 30) {
                             Button(action: {
                                 showSheet = true
-                                signInViewModel.signIn()
+                                //signInViewModel.signIn()
                             }) {
-                                Text("Sign In")
+                                Text("Login In")
                                     .bold()
                                     .padding()
                                     .frame(maxWidth: .infinity, alignment: .center)
@@ -127,7 +127,7 @@ struct SignInView: View {
                                 .cornerRadius(16)
                         }
                         .alert(isPresented: $showAlert) {
-                            Alert(title: Text("Invalid Input"), message: Text("Please fill out all fields."), dismissButton: .default(Text("OK")))
+                            Alert(title: Text("Invalid Input"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
                         }
                     }
                     .padding()
@@ -142,19 +142,62 @@ struct SignInView: View {
     }
     
     func validateLogin() {
-        if email == "" || password == "" {
-            alertMessage = "Please enter all fields."
-            if email == "" {
-                emailError = "* Required"
-            }
-            if password == "" {
-                passwordError = "* Required"
-            }
+        // Reset previous errors
+        emailError = ""
+        passwordError = ""
+        
+        // Check if fields are empty
+        if email.isEmpty && password.isEmpty {
+            alertMessage = "Please fill out all fields."
             showAlert = true
+            return
+        }
+        if email.isEmpty {
+            emailError = "Email is required"
+            alertMessage = emailError
+            showAlert = true
+            return
+        } else if !isValidEmail(email) {
+            emailError = "Invalid email format"
+            alertMessage = emailError
+            showAlert = true
+            return
+        }
+        
+        if password.isEmpty {
+            passwordError = "Password is required"
+            alertMessage = passwordError
+            showAlert = true
+            return
+        } else if password.count < 6 {
+            passwordError = "Password must be at least 6 characters"
+            alertMessage = passwordError
+            showAlert = true
+            return
+        }
+        
+        if emailError.isEmpty && passwordError.isEmpty {
+            // All validations passed
+            //signInViewModel.email = email
+            //signInViewModel.password = password
+            print("Successfully login")
+            print("The user entered:\(email) \(password)")
+            //signInViewModel.signIn()
+            
+//            if signInViewModel.errorMessage.isEmpty {
+//                print("successfully loged in")
+//            }
+//            else{
+//                
+//                alertMessage = signInViewModel.errorMessage
+//                showAlert = true
+//                
+//            }
+            
         } else {
-            emailError = ""
-            passwordError = ""
-            showAlert = false
+            // Show alert if there are errors
+            alertMessage = "Please correct the errors."
+            showAlert = true
         }
     }
     
@@ -166,6 +209,11 @@ struct SignInView: View {
         alertMessage = ""
         emailError = ""
         passwordError = ""
+    }
+    // Helper function to validate email format
+    func isValidEmail(_ email: String) -> Bool {
+        let emailRegex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"
+        return NSPredicate(format: "SELF MATCHES %@", emailRegex).evaluate(with: email)
     }
 }
 

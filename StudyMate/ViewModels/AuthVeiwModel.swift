@@ -12,19 +12,20 @@ import FirebaseAuth
 struct AuthDataResultModel{
     let uid: String
     let email: String?
-    let photoURL: String?
+    //let photoURL: String?
     
     init(user:User){
         self.uid = user.uid
         self.email = user.email
-        self.photoURL = user.photoURL?.absoluteString
+        //self.photoURL = user.photoURL?.absoluteString
     }
 }
 
 //
-final class SignInEmailViewModel: ObservableObject {
+class SignInEmailViewModel: ObservableObject {
     @Published var email: String = ""
     @Published var password: String = ""
+    @Published var errorMessage: String = ""
     
     // For creating users
     func createUser() async throws -> AuthDataResultModel{
@@ -34,7 +35,7 @@ final class SignInEmailViewModel: ObservableObject {
     }
     
     // for signin
-    func signIn(){
+    func signIn() {
         // Do validation here
         guard !email.isEmpty, !password.isEmpty else
         {
@@ -46,10 +47,15 @@ final class SignInEmailViewModel: ObservableObject {
                 let returndUserData = try await self.createUser()
                 print("success")
                 print(returndUserData)
-            }catch{
+                // Add it to the users table in firestore
+                
+                
+            }
+            catch{
                 print("error\(error)")
                 
             }
+
         }
     }
     
