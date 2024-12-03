@@ -1,26 +1,28 @@
 //
-//  SignInView.swift
+//  LogInView.swift
 //  StudyMate
 //
 //  Created by Maddie Adair on 10/24/24.
 //
 
 import SwiftUI
+import FirebaseAuth
 
-struct SignInView: View {
+struct LogInView: View {
 
-    //@StateObject private var signInViewModel = SignInEmailViewModel()
-    //@State private var username: String = ""
-
+    //@State private var navigateToHome = false
+    @AppStorage("navigateToHome") var navigateToHome: Bool = false
+    // Required fields
     @State private var email: String = ""
-
     @State private var password: String = ""
+    // Pop Up errors
     @State private var showSheet = false
     @State private var showAlert = false
     @State private var alertMessage = ""
+    // Error validation
     @State private var emailError = ""
     @State private var passwordError = ""
-    
+    //MARK: - View Start
     var body: some View {
         NavigationStack {
             ZStack {
@@ -49,17 +51,17 @@ struct SignInView: View {
                     
                     Spacer()
                     
-                    
+                    // Stack for Login SignUp Forget Password Buttons
                     VStack(spacing: 30) {
                         Spacer()
 
-
+                        // For Login Buttion
                         VStack(spacing: 30) {
                             Button(action: {
                                 showSheet = true
-                                //signInViewModel.signIn()
+                                
                             }) {
-                                Text("Login In")
+                                Text("Login")
                                     .bold()
                                     .padding()
                                     .frame(maxWidth: .infinity, alignment: .center)
@@ -67,7 +69,7 @@ struct SignInView: View {
                                     .foregroundStyle(.forest)
                                     .cornerRadius(16)
                             }
-                            
+                            // Forgetp Password View
                             NavigationLink(destination: ForgotPasswordView()) {
                                 Text("Forgot your password?")
                                     .foregroundStyle(.beige)
@@ -76,7 +78,7 @@ struct SignInView: View {
                         }
                             
                             Spacer()
-                            
+                            // Sign UP if dont have an account
                             HStack {
                                 Text("Don't have an account?")
                                     .foregroundStyle(.beige)
@@ -93,6 +95,7 @@ struct SignInView: View {
                     
                 }
                 .padding(30)
+                // LOGIN Sheet
                 .sheet(isPresented: $showSheet, onDismiss: { resetFields() }) {
                     VStack(spacing: 40) {
                         Spacer()
@@ -140,67 +143,62 @@ struct SignInView: View {
             }
         }
     }
+    //------------------------------------End OF VIEW -----------------------------------------------
     
+    //MARK: - Function to validate Login
     func validateLogin() {
-        // Reset previous errors
-        emailError = ""
-        passwordError = ""
-        
         // Check if fields are empty
-        if email.isEmpty && password.isEmpty {
+        email = email.trimmingCharacters(in: .whitespacesAndNewlines)
+        password = password.trimmingCharacters(in: .whitespacesAndNewlines)
+        // Empty fields
+        if email.isEmpty || password.isEmpty {
             alertMessage = "Please fill out all fields."
             showAlert = true
             return
         }
-        if email.isEmpty {
-            emailError = "Email is required"
-            alertMessage = emailError
-            showAlert = true
-            return
-        } else if !isValidEmail(email) {
-            emailError = "Invalid email format"
-            alertMessage = emailError
+        // email empty
+        else if email.isEmpty {
+            alertMessage = "Email is required"
             showAlert = true
             return
         }
-        
-        if password.isEmpty {
-            passwordError = "Password is required"
-            alertMessage = passwordError
+        // Validate Email
+        else if !isValidEmail(email) {
+            alertMessage = "Invalid email format"
             showAlert = true
             return
-        } else if password.count < 6 {
-            passwordError = "Password must be at least 6 characters"
+        }
+        // Password Empty
+        else if password.isEmpty {
+            alertMessage = "Password is required"
+            showAlert = true
+            return
+        }
+        // Validate Password
+        else if let passwordError = validatePassword(password) {
             alertMessage = passwordError
             showAlert = true
             return
         }
-        
-        if emailError.isEmpty && passwordError.isEmpty {
-            // All validations passed
-            //signInViewModel.email = email
-            //signInViewModel.password = password
-            print("Successfully login")
-            print("The user entered:\(email) \(password)")
-            //signInViewModel.signIn()
-            
-//            if signInViewModel.errorMessage.isEmpty {
-//                print("successfully loged in")
-//            }
-//            else{
-//                
-//                alertMessage = signInViewModel.errorMessage
-//                showAlert = true
-//                
-//            }
-            
-        } else {
-            // Show alert if there are errors
-            alertMessage = "Please correct the errors."
-            showAlert = true
+        // All validation satisfied
+        else {
+            print("email\(email)")
+            print("password\(password)")
+            // Navigate to HomeScreen
+            Task {
+                let success = await loginUser()
+                if success {
+                    // Navigate to the home screen
+                    print("Login successful!")
+                    showSheet = false
+                    navigateToHome = true
+                } else {
+                    print("Login failed.")
+                }
+            }
         }
     }
-    
+    // Reset fields functions
     func resetFields() {
         email = ""
         password = ""
@@ -210,13 +208,65 @@ struct SignInView: View {
         emailError = ""
         passwordError = ""
     }
-    // Helper function to validate email format
+    // MARK: - Function To Login User
+    func loginUser() async -> Bool {
+        do {
+            let _ = try await Auth.auth().signIn(withEmail: self.email, password: self.password)
+            print("User signed in successfully!")
+            return true
+        } catch {
+            print(error.localizedDescription)
+            self.alertMessage = "Error signing in. Please try again."
+            self.showAlert = true
+            return false
+        }
+    }
+
+    
+    // MARK: - Helper function to validate Entries
+    
     func isValidEmail(_ email: String) -> Bool {
         let emailRegex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"
         return NSPredicate(format: "SELF MATCHES %@", emailRegex).evaluate(with: email)
     }
+    // Validationf for password
+    func validatePassword(_ password: String) -> String? {
+        // Check password length (minimum 8 characters)
+        if password.count < 8 {
+            return "Password must be at least 8 characters long."
+        }
+        
+        // Check for at least one uppercase letter
+        let uppercaseLetterRegex = ".*[A-Z]+.*"
+        if !NSPredicate(format: "SELF MATCHES %@", uppercaseLetterRegex).evaluate(with: password) {
+            return "Password must contain at least one uppercase letter."
+        }
+        
+        // Check for at least one lowercase letter
+        let lowercaseLetterRegex = ".*[a-z]+.*"
+        if !NSPredicate(format: "SELF MATCHES %@", lowercaseLetterRegex).evaluate(with: password) {
+            return "Password must contain at least one lowercase letter."
+        }
+        
+        // Check for at least one number
+        let numberRegex = ".*[0-9]+.*"
+        if !NSPredicate(format: "SELF MATCHES %@", numberRegex).evaluate(with: password) {
+            return "Password must contain at least one number."
+        }
+        
+        // Check for at least one special character
+        let specialCharacterRegex = ".*[!@#$%^&*(),.?\":{}|<>]+.*"
+        if !NSPredicate(format: "SELF MATCHES %@", specialCharacterRegex).evaluate(with: password) {
+            return "Password must contain at least one special character."
+        }
+        
+        // Password is valid
+        return nil
+    }
+    
+
 }
 
 #Preview {
-    SignInView()
+    LogInView()
 }

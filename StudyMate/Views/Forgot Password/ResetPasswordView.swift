@@ -75,7 +75,7 @@ struct ResetPasswordView: View {
                                     .frame(maxWidth: .infinity, alignment: .leading)
                             }
                         }
-                        NavigationLink(destination: SignInView().navigationBarBackButtonHidden(true)) {
+                        NavigationLink(destination: LogInView().navigationBarBackButtonHidden(true)) {
                             Text("Reset")
                                 .bold()
                                 .padding()

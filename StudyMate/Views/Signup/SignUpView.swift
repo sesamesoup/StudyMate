@@ -6,74 +6,11 @@
 //
 
 import SwiftUI
+import FirebaseFirestore
+import FirebaseAuth
 // Data Structure
 
-// Screen 1
-struct Personal {
-    var firstName: String = ""
-    var lastName: String = ""
-}
 
-// Screen 2
-struct Credentials {
-    var username: String = ""
-    var email: String = ""
-    var password: String = ""
-    var confirmPassword: String = ""
-}
-
-// Screen 3
-struct ProfileIcon {
-    var profilePicString: String = ""
-}
-
-// Screen 4
-struct Academic {
-    var major: String = majors[0]
-    var year: String = "Sophomore"
-}
-
-// togther
-struct NewUserData {
-    var personal: Personal = Personal()
-    var credentials: Credentials = Credentials()
-    var academic: Academic = Academic()
-    var pfp: ProfileIcon = ProfileIcon()
-}
-
-enum Steps {
-    case personal
-    case login
-    case academic
-    case pfp
-    
-    var title: String {
-        switch self {
-        case .personal: return "Personal"
-        case .login: return "Login"
-        case .academic: return "Academic"
-        case .pfp: return "Profile Picture"
-        }
-    }
-    
-    var next: Steps? {
-        switch self {
-        case .personal: return .login
-        case .login: return .pfp
-        case .pfp: return .academic
-        case .academic: return nil
-        }
-    }
-    
-    var previous: Steps? {
-        switch self {
-        case .personal: return nil
-        case .login: return .personal
-        case .pfp: return .login
-        case .academic: return .pfp
-        }
-    }
-}
 // View models -------------------------------------------
 struct NameView: View {
     @Binding var personal: Personal
@@ -89,6 +26,7 @@ struct NameView: View {
             }
             
             VStack(spacing: 20) {
+                // First Name
                 Text("First Name")
                     .fontWeight(.semibold)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -98,7 +36,7 @@ struct NameView: View {
                     .padding()
                     .background(.white)
                     .cornerRadius(16)
-                
+                // Last Name
                 Text("Last Name")
                     .fontWeight(.semibold)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -290,6 +228,8 @@ struct SignUpView: View {
     @State private var currentStep: Steps = .personal
     @State private var showAlert = false
     @State private var errorMessage = ""
+    //
+    @State private var navigateToHomeView = false
     
     var body: some View {
         ZStack {
@@ -311,7 +251,7 @@ struct SignUpView: View {
                         }
                         
                     } else if currentStep == .personal {
-                        NavigationLink(destination: SignInView()        .navigationBarBackButtonHidden(true)
+                        NavigationLink(destination: LogInView().navigationBarBackButtonHidden(true)
                         ) {
                             Image(systemName: "arrow.left")
                                 .resizable()
@@ -358,13 +298,14 @@ struct SignUpView: View {
                     
                     HStack {
                         Button(action: {
-                            if currentStep.next != nil {
+//                            if currentStep != nil {
                                 validate()
-                            }
+                                print("The current step was\(currentStep)")
+//                            }
                         }) {
                             
                             if currentStep == .academic {
-                                NavigationLink(destination: MainView().navigationBarBackButtonHidden(true)) {
+//                                NavigationLink(destination: MainView().navigationBarBackButtonHidden(true)) {
                                     Text("Complete")
                                         .frame(maxWidth: .infinity, alignment: .bottom)
                                         .bold()
@@ -372,7 +313,7 @@ struct SignUpView: View {
                                         .background(.forest)
                                         .foregroundStyle(.beige)
                                         .cornerRadius(16)
-                                }
+                                //}
                                 
                                 
                             } else if currentStep.next != nil && currentStep != .login {
@@ -400,6 +341,12 @@ struct SignUpView: View {
                         .alert(isPresented: $showAlert) {
                             Alert(title: Text("Invalid Input"), message: Text(errorMessage), dismissButton: .default(Text("OK")))
                         }
+                        NavigationLink(
+                            destination: MainView().navigationBarBackButtonHidden(true),
+                            isActive: $navigateToHomeView
+                        ) {
+                            EmptyView()
+                        }
                     }
                     .frame(alignment: .bottom)
                                         
@@ -413,8 +360,6 @@ struct SignUpView: View {
     
     func validate () {
         errorMessage = ""
-        
-        var hasErrors = false
         // Personal view
         if currentStep == .personal {
             userObj.personal.firstName = userObj.personal.firstName.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -442,6 +387,13 @@ struct SignUpView: View {
                 showAlert = true
                 return
             }
+            else {
+                if let nextStep = currentStep.next {
+                    currentStep = nextStep
+                    //
+                    return
+                }
+            }
         }
         
         // Login View
@@ -459,10 +411,9 @@ struct SignUpView: View {
                 userObj.credentials.email.isEmpty {
                 errorMessage = "Please fill out all fields."
                 showAlert = true
-                hasErrors = true
                 return
             }
-            // Validating email
+            // Validating email --- Call backend to check if the usernmae is taken
             else if !isValidEmail(userObj.credentials.email) {
                 errorMessage = "Invalid email format"
                 showAlert = true
@@ -473,7 +424,6 @@ struct SignUpView: View {
             else if let passwordError = validatePassword(userObj.credentials.password) {
                 errorMessage = passwordError
                 showAlert = true
-                hasErrors = true
                 return
             }
             
@@ -481,37 +431,143 @@ struct SignUpView: View {
             else if userObj.credentials.password != userObj.credentials.confirmPassword {
                 errorMessage = "Passwords do not match."
                 showAlert = true
-                hasErrors = true
                 return
             }
             
-            // all is validate
-            signInViewModel.email = userObj.credentials.email
-            signInViewModel.password = userObj.credentials.password
-            // if return true go to the next one else show error message
-            signInViewModel.signIn()
-            // add user to the user table
+
+            // All is validated
+            else {
+                signInViewModel.email = userObj.credentials.email
+                signInViewModel.password = userObj.credentials.password
+                
+                // Perform sign-in asynchronously
+                Task {
+                    let success = await signInViewModel.signIn()
+                    
+                    // Get the current user after sign-in
+                    if let currentUser = Auth.auth().currentUser {
+                        let userID = currentUser.uid
+                        print("User ID: \(userID)")
+                        
+                        if success {
+                            let userData: [String: Any] = [
+                                "email": signInViewModel.email,
+                                "password": signInViewModel.password,
+                                "username": userObj.credentials.username,
+                                "firstName": userObj.personal.firstName,
+                                "lastName": userObj.personal.lastName
+                            ]
+                            
+                            saveUserDataToFirestore(userID: userID, userData: userData) { isSuccess, errorMessage in
+                                if let errorMessage = errorMessage {
+                                    self.errorMessage = errorMessage
+                                    self.showAlert = true
+                                } else if isSuccess {
+                                    // Successfully saved, navigate to the homepage or next step
+                                    self.currentStep = .pfp
+                                    return
+                                }
+                            }
+                        } else {
+                            self.errorMessage = "Login failed, please try again."
+                            self.showAlert = true
+                        }
+                    } else {
+                        print("No user is currently signed in.")
+                        self.errorMessage = "Failed to authenticate user."
+                        self.showAlert = true
+                    }
+                }
+            }
+
             
             // call the auth
         }
 
-        
+        // Profile page setup
         else if currentStep == .pfp {
             if userObj.pfp.profilePicString == "" {
                 errorMessage = "Please choose a profile picture."
-                hasErrors = true
+                showAlert = true
+                return
+            }
+            else{
+                currentStep = .academic
+                return
             }
         }
         
-        if hasErrors {
-            showAlert = true
+        // Academic setup
+        else if currentStep == .academic {
+            print("Year: \(userObj.academic.year)")
+            print("Major: \(userObj.academic.major)")
+            // validate data
+            if userObj.academic.major == "" {
+                errorMessage = "Please enter your major."
+                showAlert = true
+                return
+            }
+            else if userObj.academic.year.isEmpty{
+                errorMessage = "Please enter your year."
+                showAlert = true
+                return
+            }
+            else{
+                if let currentUser = Auth.auth().currentUser {
+                    let userID = currentUser.uid
+                    print("User ID: \(userID)")
+                    
+                    
+                    let userData: [String: Any] = [
+                        "profilePicture": userObj.pfp.profilePicString,
+                        "major": userObj.academic.major,
+                        "year": userObj.academic.year
+                    ]
+                    
+                    saveUserDataToFirestore(userID: userID, userData: userData) { isSuccess, errorMessage in
+                        if let errorMessage = errorMessage {
+                            self.errorMessage = errorMessage
+                            self.showAlert = true
+                        } else if isSuccess {
+                            navigateToHomeView = true
+                            if let nextStep = currentStep.next {
+                                currentStep = nextStep
+                            }
+                            else{
+                                print("problem completing academic View")
+                            }
+                            return
+                        }
+                    }
+                } else {
+                    print("No user is currently signed in.")
+                    self.errorMessage = "Failed to authenticate user."
+                    self.showAlert = true
+                }
+            }
+           
         }
+        //
         else {
-            if let nextStep = currentStep.next {
-                currentStep = nextStep
+           //
+            print("in else of all if for views in SignUpView")
+        }
+    }
+    //-------------------------------------------------------------------------------------------
+    func saveUserDataToFirestore(
+        userID: String,
+        userData: [String: Any],
+        completion: @escaping (Bool, String?) -> Void
+    ) {
+        Firestore.firestore().collection("users").document(userID).setData(userData, merge: true) { error in
+            if let error = error {
+                completion(false, "Failed to save user data: \(error.localizedDescription)")
+            } else {
+                completion(true, nil)
             }
         }
     }
+    //-------------------------------------------------------------------------------------------
     // Validate name
     func isValidName(_ name: String) -> Bool {
         let nameRegex = "^[A-Za-z]+$"

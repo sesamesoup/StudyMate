@@ -6,18 +6,24 @@
 //
 
 import SwiftUI
+import FirebaseAuth
 
 struct ProfileView: View {
-    @State private var firstName = "Jane"
-    @State private var lastName = "Doe"
-    @State private var major = majors[0]
-    @State private var year = years[1]
+    //
+    //
+    @StateObject private var viewModel = ProfileViewModel()
+    @AppStorage("navigateToHome") var navigateToHome: Bool = false
+    //
+//    @State private var firstName = "Jane"
+//    @State private var lastName = "Doe"
+//    @State private var major = majors[0]
+//    @State private var year = years[1]
     @State private var profileIcon = "girl1"
-    @State private var email = "janedoe@mail.com"
-    @State private var description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-    @State private var username = "janedoe"
-    @State private var password = "password"
-    @State private var confirmPassword = "password"
+//    @State private var email = "janedoe@mail.com"
+//    @State private var description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+//    @State private var username = "janedoe"
+//    @State private var password = "password"
+//    @State private var confirmPassword = "password"
 
 
     var body: some View {
@@ -31,7 +37,7 @@ struct ProfileView: View {
                                  style: .continuous)
                 .aspectRatio(1.4, contentMode: .fill)
                 .overlay(
-                    Image(profileIcon)
+                    Image(viewModel.userProfile?.profilePicture ?? "person.circle.fill")
                         .resizable()
                         .scaledToFill()
                         .offset(x: -30.0, y: 20.0)
@@ -43,30 +49,30 @@ struct ProfileView: View {
                 VStack(alignment: .center, spacing: 50) {
                     VStack(spacing: 14) {
                         VStack(spacing: 6) {
-                            Text("\(firstName) \(lastName)")
+                            Text("\(viewModel.userProfile?.firstName ?? "FirstName") \(viewModel.userProfile?.lastName ?? "LastName")")
                             //                                .font(.system(size: 32, weight: .semibold))
                             
                             
                                 .font(.custom("InstrumentSerif-Regular", size: 48))
                                 .foregroundStyle(.black)
                             
-                            Text("@\(username)")
+                            Text("@\(viewModel.userProfile?.username ?? "--")")
                                 .font(.system(size: 20, weight: .semibold))
                                 .foregroundStyle(.black)
                         }
                         
-                        Text("\(major) - \(year)")
+                        Text("\(viewModel.userProfile?.major ?? "Major") - \(viewModel.userProfile?.year ?? "--")")
                             .foregroundStyle(.black)
                     }
                     
-                    VStack(spacing: 20) {
-                        
-                        
-                        Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit.")
-                            .foregroundStyle(.black)
-                            .multilineTextAlignment(.center)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
+//                    VStack(spacing: 20) {
+//                        
+//                        
+//                        Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit.")a
+//                            .foregroundStyle(.black)
+//                            .multilineTextAlignment(.center)
+//                            .fixedSize(horizontal: false, vertical: true)
+//                    }
                     
                 }
                 .frame(maxWidth: .infinity)
@@ -122,7 +128,14 @@ struct ProfileView: View {
                                 .stroke(.gray, lineWidth: 1)
                         )
                     }
-                    NavigationLink(destination: SignInView().navigationBarBackButtonHidden(true)) {
+//                    NavigationLink(destination: LogInView().navigationBarBackButtonHidden(true)) {
+//                        Text("Log Out")
+//                            .foregroundStyle(.beige)
+//                            .fontWeight(.semibold)
+//                    }
+                    Button(action: {
+                        logOutUser()
+                    }) {
                         Text("Log Out")
                             .foregroundStyle(.beige)
                             .fontWeight(.semibold)
@@ -138,10 +151,32 @@ struct ProfileView: View {
                 Spacer()
             }
             .padding(30)
-            
+            .onAppear {
+                Task {
+                    if let userID = Auth.auth().currentUser?.uid {
+                        await viewModel.fetchUserProfile(userID: userID)
+                        print(viewModel.userProfile)
+                    }
+                }
+            }
         }
         .navigationBarBackButtonHidden(true)
     }
+    //
+    func logOutUser() {
+        do {
+            try Auth.auth().signOut()
+            print("User logged out successfully.")
+            
+            // Navigate to the Login View (Reset app state if necessary)
+            navigateToHome = false
+        } catch let signOutError as NSError {
+            print("Error signing out: %@", signOutError)
+            //errorMessage = "Failed to log out. Please try again."
+            //showAlert = true
+        }
+    }
+
 }
 
 #Preview {

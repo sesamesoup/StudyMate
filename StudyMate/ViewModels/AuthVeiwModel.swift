@@ -35,29 +35,50 @@ class SignInEmailViewModel: ObservableObject {
     }
     
     // for signin
-    func signIn() {
+//    func signIn() -> Bool{
+//        // Do validation here
+//        guard !email.isEmpty, !password.isEmpty else
+//        {
+//            print("No Email or password Found")
+//            return false
+//        }
+//        Task{
+//            do{
+//                let returndUserData = try await self.createUser()
+//                print("success")
+//                print(returndUserData)
+//                // Add it to the users table in firestore
+//                return true
+//                
+//            }
+//            catch{
+//                print("error\(error)")
+//                return false
+//                
+//            }
+//
+//        }
+//        return false
+//    }
+    func signIn() async -> Bool {
         // Do validation here
-        guard !email.isEmpty, !password.isEmpty else
-        {
+        guard !email.isEmpty, !password.isEmpty else {
             print("No Email or password Found")
-            return
+            return false
         }
-        Task{
-            do{
-                let returndUserData = try await self.createUser()
-                print("success")
-                print(returndUserData)
-                // Add it to the users table in firestore
-                
-                
-            }
-            catch{
-                print("error\(error)")
-                
-            }
-
+        
+        do {
+            let returnedUserData = try await self.createUser()
+            print("success")
+            print(returnedUserData)
+            
+            return true
+        } catch {
+            print("error \(error)")
+            return false
         }
     }
+
     
     // To Get authenticated user
     func getAuthenticatedUser() throws -> AuthDataResultModel{

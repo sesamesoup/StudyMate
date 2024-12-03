@@ -6,11 +6,37 @@
 //
 
 import SwiftUI
-
+import FirebaseAuth
 struct ContentView: View {
+    @AppStorage("navigateToHome") var navigateToHome: Bool = false
+    @State private var isAuthenticated: Bool = false
     var body: some View {
+//        VStack {
+//                
+//            if navigateToHome {
+//                MainView()
+//            } else {
+//                LogInView()
+//            }
+//        }
         VStack {
-            SignInView()
+            if isAuthenticated {
+                MainView()
+            } else {
+                LogInView()
+            }
+        }
+        .onAppear {
+            checkAuthentication()
+        }
+    }
+    private func checkAuthentication() {
+        // Check Firebase's current user
+        if Auth.auth().currentUser != nil {
+            print(Auth.auth().currentUser!.email!)
+            isAuthenticated = true
+        } else {
+            isAuthenticated = false
         }
     }
 }
