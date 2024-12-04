@@ -2,11 +2,13 @@
 //  ProfileModel.swift
 //  StudyMate
 //
-//  Created by Sarang Mistry on 12/3/24.
+//  Created by Sarang Mistry on 11/23/24.
 //
 
 import Foundation
-
+import Firebase
+import FirebaseAuth
+import FirebaseFirestore
 struct UserProfile: Identifiable, Codable {
     var id: String // The user ID (matches the Firestore document ID)
     var email: String
@@ -19,8 +21,17 @@ struct UserProfile: Identifiable, Codable {
     var year: String
 }
 //
+//struct UserPost: Identifiable, Codable {
+////    var id: String // postID (Auto-generated Firestore document ID)
+//    var createdAt: Timestamp // Timestamp when the post was created
+//    var description: String // Description of the post
+//    var images: [String] // Array of image URLs
+//    var subject: String // Subject of the post
+//    var title: String // Title of the post
+//}
+
 struct UserPost: Identifiable, Codable {
-    var id: String // postID (Auto-generated Firestore document ID)
+    @DocumentID var id: String? // Automatically maps to Firestore document ID
     var createdAt: Timestamp // Timestamp when the post was created
     var description: String // Description of the post
     var images: [String] // Array of image URLs
@@ -28,10 +39,6 @@ struct UserPost: Identifiable, Codable {
     var title: String // Title of the post
 }
 
-
-
-import Firebase
-import FirebaseAuth
 @MainActor
 class ProfileViewModel: ObservableObject {
     @Published var userProfile: UserProfile?
@@ -69,39 +76,6 @@ class ProfileViewModel: ObservableObject {
         isLoading = false
     }
     
-    //
-    // Fetching all posts for the current user
-    //    func fetchCurrentUserPosts() async {
-    //        guard let currentUserID = Auth.auth().currentUser?.uid else {
-    //            errorMessage = "No logged-in user."
-    //            return
-    //        }
-    //
-    //        isLoading = true
-    //        errorMessage = nil
-    //
-    //        do {
-    //            let snapshot = try await Firestore.firestore()
-    //                .collection("users")
-    //                .document(currentUserID)
-    //                .collection("posts")
-    //                .getDocuments()
-    //
-    //            self.userPosts = snapshot.documents.compactMap { document in
-    //                try? document.data(as: UserPost.self)
-    //            }
-    //
-    //            if userPosts.isEmpty {
-    //                errorMessage = "You have not added any posts yet."
-    //            }
-    //        } catch {
-    //            errorMessage = "Failed to fetch your posts: \(error.localizedDescription)"
-    //        }
-    //
-    //        isLoading = false
-    //    }
-    
-    // Fetching all posts for the current user
     func fetchCurrentUserPosts() async {
         guard let currentUserID = Auth.auth().currentUser?.uid else {
             DispatchQueue.main.async {
@@ -123,8 +97,10 @@ class ProfileViewModel: ObservableObject {
                 .getDocuments()
             
             let posts = snapshot.documents.compactMap { document in
-                try? document.data(as: UserPost.self)
+                try? document.data(as: UserPost.self) // Automatically maps Firestore document ID
             }
+            
+            print("Posts fetched: count \(posts.count)")
             
             DispatchQueue.main.async {
                 self.userPosts = posts
@@ -140,5 +116,4 @@ class ProfileViewModel: ObservableObject {
         }
     }
 
-    
 }
