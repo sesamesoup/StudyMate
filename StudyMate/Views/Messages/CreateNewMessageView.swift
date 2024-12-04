@@ -41,6 +41,16 @@ struct OtherUser: Identifiable {
         self.profilePicture = data["profilePicture"] as? String ?? ""
         self.username = data["username"] as? String ?? ""
     }
+    init() {
+        self.uid = "" // Use document ID as uid
+        self.email = ""
+        self.firstName = ""
+        self.lastName = ""
+        self.major =  ""
+        self.year = ""
+        self.profilePicture =  ""
+        self.username =  ""
+    }
 }
 
 

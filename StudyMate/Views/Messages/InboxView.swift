@@ -110,8 +110,9 @@ struct InboxView: View {
                         Text("Inbox")
                             .font(.custom("InstrumentSerif-Regular", size: 48))
                         // Chat log here
+                        
                         NavigationLink(
-                            destination: ChatLogView(chatUser: selectedUser),
+                            destination: ChatLogView(chatUser: self.selectedUser ?? OtherUser()),
                             isActive: $shouldNavigateToChatLogView
                         ) {
                             EmptyView() // NavigationLink needs a content closure, even if it's empty
@@ -193,23 +194,7 @@ struct InboxView: View {
 
 // ==============================================================
 
-struct ChatLogView:View{
-    //
-    let chatUser : OtherUser?
-    
-    //
-    var body: some View{
-        ScrollView{
-            ForEach(0..<10){ i in
-                Text("Fack message for now")
-                
-            }
-        }
-        .navigationTitle(chatUser?.username ?? "Chat")
-        .navigationBarTitleDisplayMode(.inline)
-    }
-    
-}
+
 
 //#Preview {
 //    InboxView()

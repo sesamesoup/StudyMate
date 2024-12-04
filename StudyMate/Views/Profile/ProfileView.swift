@@ -29,7 +29,7 @@ struct ProfileView: View {
                 .aspectRatio(1.4, contentMode: .fill)
                 // profile picture
                 .overlay(
-                    Image(viewModel.userProfile?.profilePicture ?? "person.circle.fill")
+                    Image(viewModel.userProfile?.profilePicture ?? "profile")
                         .resizable()
                         .scaledToFill()
                         .offset(x: -30.0, y: 20.0)
