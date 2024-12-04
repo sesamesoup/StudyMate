@@ -1,0 +1,147 @@
+//
+//  CreateNewMessageView.swift
+//  StudyMate
+//
+//  Created by Sarang Mistry on 12/4/24.
+//
+
+import SwiftUI
+import Firebase
+import FirebaseAuth
+import FirebaseFirestore
+//
+//struct OtherUser: Identifiable {
+//    var id: String { uid }
+//    
+//    let uid, email, firstName, lastName, major, year, profilePicture: String
+//    
+//    init(data: [String: Any]) {
+//        self.uid = data["uid"] as? String ?? ""
+//        self.email = data["email"] as? String ?? ""
+//        self.firstName = data["firstName"] as? String ?? ""
+//        self.lastName = data["lastName"] as? String ?? ""
+//        self.major = data["major"] as? String ?? ""
+//        self.year = data["year"] as? String ?? ""
+//        self.profilePicture = data["profilePicture"] as? String ?? ""
+//    }
+//}
+
+struct OtherUser: Identifiable {
+    var id: String { uid } // `id` conforms to Identifiable protocol
+    let uid: String // Document ID (user ID)
+    let email, firstName, lastName, major, year, profilePicture, username: String
+    
+    init(documentId: String, data: [String: Any]) {
+        self.uid = documentId // Use document ID as uid
+        self.email = data["email"] as? String ?? ""
+        self.firstName = data["firstName"] as? String ?? ""
+        self.lastName = data["lastName"] as? String ?? ""
+        self.major = data["major"] as? String ?? ""
+        self.year = data["year"] as? String ?? ""
+        self.profilePicture = data["profilePicture"] as? String ?? ""
+        self.username = data["username"] as? String ?? ""
+    }
+}
+
+
+class CreateNewMessageViewModel: ObservableObject {
+    @Published var users = [OtherUser]()
+    @Published var errorMessage = ""
+    
+    init() {
+        fetchAllUsers()
+    }
+    
+    
+    private func fetchAllUsers() {
+        guard let currentUserId = Auth.auth().currentUser?.uid else {
+            self.errorMessage = "No logged-in user found."
+            print("No logged-in user found.")
+            return
+        }
+        
+        Firestore.firestore().collection("users")
+            .getDocuments { snapshot, error in
+                if let error = error {
+                    self.errorMessage = "Failed to fetch users: \(error.localizedDescription)"
+                    print("Failed to fetch users: \(error)")
+                    return
+                }
+                
+                guard let documents = snapshot?.documents else {
+                    self.errorMessage = "No documents found"
+                    print("No documents found")
+                    return
+                }
+                
+                // Filter out the current user and map to OtherUser
+                self.users = documents.compactMap { document in
+                    if document.documentID == currentUserId {
+                        return nil // Skip current user
+                    }
+                    return OtherUser(documentId: document.documentID, data: document.data())
+                }
+                
+//                print("Fetched users (excluding current): \(self.users)")
+                print("Fetched users (excluding current): in Create New Message View")
+            }
+    }
+}
+
+struct CreateNewMessageView: View {
+    let didSelectNewUser : (OtherUser) -> ()
+    //
+    @ObservedObject var createNewMessageViewModel = CreateNewMessageViewModel()
+    //
+    @Environment(\.dismiss) var dismiss
+    //
+    var body: some View {
+        //
+        NavigationView {
+            ScrollView {
+                VStack(alignment: .leading){
+                    ForEach(createNewMessageViewModel.users) { user in
+                        // Add button here ??}
+                        Button{
+                            dismiss()
+                            didSelectNewUser(user)
+                        } label: {
+                            HStack(spacing: 16) {
+                                Image(user.profilePicture)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 40, height: 40)
+                                    .clipShape(Circle())
+                                
+                                Text("@\(user.username)")
+                                    .font(.system(size: 16, weight: .medium))
+                                    .foregroundColor(.primary)
+                                Spacer()
+                            }
+                            .padding(.vertical, 8)
+                            .padding(.horizontal)
+                        }
+                        
+                    }
+                }
+            }
+            .navigationTitle("New Message")
+            .toolbar {
+                ToolbarItemGroup(placement: .navigationBarLeading) {
+                    Button {
+                        // Add action here
+//                        presentationMode.wrappedValue.dismiss()
+                        dismiss()
+                    } label: {
+                        Text("Cancel")
+                    }
+                }
+            }
+        }
+
+    }
+}
+
+//#Preview {
+//    CreateNewMessageView()
+//}

@@ -20,9 +20,12 @@ struct AddPostView: View {
     @State private var title: String = ""
     @State private var errorMessage: String = ""
     @State private var description: String = ""
-//    @State private var subject: String = ""
+    //@State private var subject: String = ""
+    // Alerts
+    @State private var showSuccessAlert: Bool = false
     @State private var showAlert: Bool = false
     @State private var showCancelAlert: Bool = false
+    // Vars
     @State private var selectedItems = [PhotosPickerItem]()
     @State private var selectedImages = [UIImage]()
     @State private var majorSelection = majors[0]
@@ -36,14 +39,16 @@ struct AddPostView: View {
                 VStack(alignment: .leading, spacing: 45) {
                     
                     HStack {
+                        // cancel button
                         Button("Cancel") {
                             showCancelAlert = true
                             
                         }
+                        // Alert for cancel
                         .alert("Are you sure you want to cancel?", isPresented: $showCancelAlert) {
                             Button("Cancel", role: .destructive) {
                                 resetAllFields() // Reset the fields
-                                //dismiss() the view if model
+                                dismiss()// the view if model
                             }
                             Button("Keep Editing", role: .cancel) {
                                 // Keep editing
@@ -53,38 +58,21 @@ struct AddPostView: View {
                         Spacer()
 
                         Button("Confirm") {
-                            // Removing whitespaces
-                            title = title.trimmingCharacters(in: .whitespacesAndNewlines)
-                            description = description.trimmingCharacters(in: .whitespacesAndNewlines)
-                            majorSelection = majorSelection.trimmingCharacters(in: .whitespacesAndNewlines)
-                            
-                            // Validate inputs
-                            errorMessage = validateInputs()
-                            if !errorMessage.isEmpty {
-                                print("Validation failed: \(errorMessage)")
-                                showAlert = true
-                                return
-                            } else {
-                                print("All inputs are valid.")
-                                print(description)
-                                print(majorSelection)
-                                
-                                // Fill the object
-                                addPostViewModel.post.title = title
-                                addPostViewModel.post.description = description
-                                addPostViewModel.post.subject = majorSelection
-//                                print(selectedItems[0])
-                                // Perform asynchronous save operation in a Task
-                                Task {
-                                    await addPostViewModel.savePost(images: selectedImages)
-                                    //print("Post saved successfully.")
-                                }
-//                                await addPostViewModel.savePost(images: selectedImages)
-
-                            }
+                            // calling Submit
+                            handelSubmit()
+                        }
+                        .foregroundStyle(.forest)
+                        .alert(isPresented: $showSuccessAlert) {
+                            Alert(
+                                title: Text("Success"),
+                                message: Text("Your post has been successfully saved."),
+                                dismissButton: .default(Text("OK"), action: {
+                                    resetAllFields()
+                                    dismiss() // Dismiss the view after confirming
+                                })
+                            )
                         }
 
-                        .foregroundStyle(.forest)
                     }
                     
                     Text("New Post")
@@ -232,9 +220,9 @@ struct AddPostView: View {
         if majorSelection.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             return "Please select a subject."
         }
-        if selectedImages.isEmpty {
-            return "Please select at least one image."
-        }
+//        if selectedImages.isEmpty {
+//            return "Please select at least one image."
+//        }
         return ""
     }
 
@@ -249,10 +237,37 @@ struct AddPostView: View {
         selectedImages = []
         majorSelection = majors[0]
     }
+    //
+    func handelSubmit(){
+        title = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        description = description.trimmingCharacters(in: .whitespacesAndNewlines)
+        majorSelection = majorSelection.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        // Validate inputs
+        errorMessage = validateInputs()
+        if !errorMessage.isEmpty {
+            print("Validation failed: \(errorMessage)")
+            showAlert = true
+            return
+        } else {
+            print("All inputs are valid.")
+            print(description)
+            print(majorSelection)
+            
+            // Fill the object
+            addPostViewModel.post.title = title
+            addPostViewModel.post.description = description
+            addPostViewModel.post.subject = majorSelection
+            // Perform asynchronous save operation in a Task
+            Task {
+                await addPostViewModel.savePost(images: selectedImages)
+                // Show success alert if save is successful
+                DispatchQueue.main.async {
+                    showSuccessAlert = true
+                }
+            }
+            
+        }
+    }
 
-
-}
-
-#Preview {
-    AddPostView()
 }
