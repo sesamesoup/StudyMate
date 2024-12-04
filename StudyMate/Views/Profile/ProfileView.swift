@@ -66,7 +66,7 @@ struct ProfileView: View {
                 
                 VStack(spacing: 20) {
                     // --------------- Account View --------------------
-                    NavigationLink(destination: AccountView(profileIcon: $profileIcon).navigationBarBackButtonHidden(true)) {
+                    NavigationLink(destination: AccountView(viewModel:viewModel).navigationBarBackButtonHidden(true)) {
                         HStack {
                             Text("Account")
                                 .foregroundStyle(.forest)

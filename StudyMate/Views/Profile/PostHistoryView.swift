@@ -29,7 +29,7 @@ struct PostHistoryView: View {
                     //
                     if viewModel.userPosts.isEmpty {
                         // add Style
-                        Text("You no post yet.")
+                        Text("You have no posts yet.")
                     }
                     else{
                         VStack(spacing: 25) {

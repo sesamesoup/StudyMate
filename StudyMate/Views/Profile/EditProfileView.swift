@@ -4,20 +4,145 @@
 //
 //  Created by Maddie Adair on 11/19/24.
 //
+//
+//import SwiftUI
+//
+//struct EditProfileView: View {
+//    @Environment(\.dismiss) var dismiss
+//    //
+//    @State var major: String
+//    @State var year: String
+//    @State var profileIcon: String
+//
+//    @State private var showAlert = false
+//    @State private var alertMessage = ""
+//    @State private var emailError = ""
+//    @State private var passwordError = ""
+//    
+//    var body: some View {
+//        ZStack {
+//            Color.lightBeige
+//                .ignoresSafeArea()
+//            
+//            VStack(spacing: 40) {
+//                // getting profile view
+//                NavigationLink(destination: EditProfilePicView(profileIcon: $profileIcon)) {
+//                    RoundedRectangle(cornerRadius: 50,
+//                                     style: .continuous)
+//                    .aspectRatio(1.4, contentMode: .fill)
+//                    .overlay(
+//                        Image(profileIcon)
+//                            .resizable()
+//                            .scaledToFill()
+//                            .offset(x: -30.0, y: 20.0)
+//                    )
+//                    .frame(width: 150, height: 150, alignment: .leading)
+//                    .clipShape(RoundedRectangle(cornerRadius: 50,
+//                                                style: .continuous))
+//                }
+//                
+//                // Years
+//                VStack(alignment: .center, spacing: 50) {
+//                    VStack(alignment: .leading, spacing: 22) {
+//                        
+//                        Text("Year")
+//                            .fontWeight(.bold)
+//                        
+//                        Picker("-- Select a year --", selection: $year) {
+//                            ForEach(years, id: \.self) {
+//                                Text($0)
+//                            }
+//                        }
+//                        .pickerStyle(.menu)
+//                        .accentColor(.forest)
+//                        .frame(maxWidth: .infinity, maxHeight: 30, alignment: .leading)
+//                        .padding()
+//                        .cornerRadius(16)
+//                        .background(.customGrey)
+//                        .overlay(
+//                            RoundedRectangle(cornerRadius: 16)
+//                                .strokeBorder(.gray, lineWidth: 1)
+//                        )
+//                        
+//                        // Major
+//                        Text("Major")
+//                            .fontWeight(.bold)
+//
+//                        Picker("-- Select a major --", selection: $major) {
+//                            ForEach(majors, id: \.self) {
+//                                Text($0)
+//                            }
+//                        }
+//                        .pickerStyle(.menu)
+//                        .accentColor(.forest)
+//                        .frame(maxWidth: .infinity, maxHeight: 30, alignment: .leading)
+//                        .padding()
+//                        .cornerRadius(16)
+//                        .background(.customGrey)
+//                        .overlay(
+//                            RoundedRectangle(cornerRadius: 16)
+//                                .strokeBorder(.gray, lineWidth: 1)
+//                        )
+//                    }
+//                    
+//                }
+//                .frame(maxWidth: .infinity)
+//                            
+//                Button(action: {
+//                    
+//                }) {
+//                    Text("Confirm")
+//                        .bold()
+//                        .padding()
+//                        .frame(maxWidth: .infinity, alignment: .center)
+//                        .background(.forest)
+//                        .foregroundStyle(.beige)
+//                        .cornerRadius(16)
+//                }
+//                .alert(isPresented: $showAlert) {
+//                    Alert(title: Text("Invalid Input"), message: Text("Please fill out all fields."), dismissButton: .default(Text("OK")))
+//                }
+//                
+//                
+//                Spacer()
+//            }
+//            .navigationBarBackButtonHidden(true)
+//            .toolbar {
+//                ToolbarItem(placement: .topBarLeading) {
+//                    Button(action: {
+//                        dismiss()
+//                    }) {
+//                        HStack(spacing: 10) {
+//                            Image(systemName: "arrow.left")
+//                                .foregroundStyle(.forest)
+//                            
+//                            Text("Cancel")
+//                                .foregroundStyle(.forest)
+//                        }
+//                        
+//                    }
+//                }
+//            }
+//            .padding(30)
+//        }
+//    }
+//}
+//
 
 import SwiftUI
+import Firebase
+import FirebaseAuth
 
 struct EditProfileView: View {
     @Environment(\.dismiss) var dismiss
-    @Binding var major: String
-    @Binding var year: String
-    @Binding var description: String
-    @Binding var profileIcon: String
-
+    //
+    @State var major: String
+    @State var year: String
+    @State var profileIcon: String
+    
     @State private var showAlert = false
     @State private var alertMessage = ""
-    @State private var emailError = ""
-    @State private var passwordError = ""
+    @State private var isSuccessAlert = false
     
     var body: some View {
         ZStack {
@@ -25,24 +150,24 @@ struct EditProfileView: View {
                 .ignoresSafeArea()
             
             VStack(spacing: 40) {
+                // Profile Picture
                 NavigationLink(destination: EditProfilePicView(profileIcon: $profileIcon)) {
-                    RoundedRectangle(cornerRadius: 50,
-                                     style: .continuous)
-                    .aspectRatio(1.4, contentMode: .fill)
-                    .overlay(
-                        Image("profile")
-                            .resizable()
-                            .scaledToFill()
-                            .offset(x: -30.0, y: 20.0)
-                    )
-                    .frame(width: 150, height: 150, alignment: .leading)
-                    .clipShape(RoundedRectangle(cornerRadius: 50,
-                                                style: .continuous))
+                    RoundedRectangle(cornerRadius: 50, style: .continuous)
+                        .aspectRatio(1.4, contentMode: .fill)
+                        .overlay(
+                            Image(profileIcon)
+                                .resizable()
+                                .scaledToFill()
+                                .offset(x: -30.0, y: 20.0)
+                        )
+                        .frame(width: 150, height: 150, alignment: .leading)
+                        .clipShape(RoundedRectangle(cornerRadius: 50, style: .continuous))
                 }
                 
+                // Years and Major
                 VStack(alignment: .center, spacing: 50) {
                     VStack(alignment: .leading, spacing: 22) {
-                        
+                        // Year Picker
                         Text("Year")
                             .fontWeight(.bold)
                         
@@ -62,10 +187,10 @@ struct EditProfileView: View {
                                 .strokeBorder(.gray, lineWidth: 1)
                         )
                         
-                        
+                        // Major Picker
                         Text("Major")
                             .fontWeight(.bold)
-
+                        
                         Picker("-- Select a major --", selection: $major) {
                             ForEach(majors, id: \.self) {
                                 Text($0)
@@ -81,26 +206,15 @@ struct EditProfileView: View {
                             RoundedRectangle(cornerRadius: 16)
                                 .strokeBorder(.gray, lineWidth: 1)
                         )
-                        
-                        
-                        Text("Description")
-                            .fontWeight(.bold)
-                        TextField("Username", text: $description)
-                            .frame(maxHeight: 100, alignment: .topLeading)
-                            .padding()
-                            .cornerRadius(16)
-                            .background(.customGrey)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 16)
-                                    .strokeBorder(.gray, lineWidth: 1)
-                            )
                     }
-                    
                 }
                 .frame(maxWidth: .infinity)
-                            
+                
+                // Confirm Button
                 Button(action: {
-//                    validateLogin()
+                    if validateInputs() {
+                        updateProfile()
+                    }
                 }) {
                     Text("Confirm")
                         .bold()
@@ -111,9 +225,12 @@ struct EditProfileView: View {
                         .cornerRadius(16)
                 }
                 .alert(isPresented: $showAlert) {
-                    Alert(title: Text("Invalid Input"), message: Text("Please fill out all fields."), dismissButton: .default(Text("OK")))
+                    Alert(
+                        title: Text(isSuccessAlert ? "Success" : "Invalid Input"),
+                        message: Text(alertMessage),
+                        dismissButton: .default(Text("OK"))
+                    )
                 }
-                
                 
                 Spacer()
             }
@@ -126,19 +243,51 @@ struct EditProfileView: View {
                         HStack(spacing: 10) {
                             Image(systemName: "arrow.left")
                                 .foregroundStyle(.forest)
-                            
                             Text("Cancel")
                                 .foregroundStyle(.forest)
                         }
-                        
                     }
                 }
             }
             .padding(30)
         }
     }
+    
+    // Validation Function
+    private func validateInputs() -> Bool {
+        if major.isEmpty || year.isEmpty {
+            alertMessage = "Please fill out all fields."
+            isSuccessAlert = false
+            showAlert = true
+            return false
+        }
+        return true
+    }
+    
+    // Backend Update Function
+    private func updateProfile() {
+        guard let userID = Auth.auth().currentUser?.uid else {
+            alertMessage = "No authenticated user found."
+            isSuccessAlert = false
+            showAlert = true
+            return
+        }
+        
+        let updatedData: [String: Any] = [
+            "major": major,
+            "year": year,
+            "profilePicture": profileIcon
+        ]
+        
+        Firestore.firestore().collection("users").document(userID).updateData(updatedData) { error in
+            if let error = error {
+                alertMessage = "Error updating profile: \(error.localizedDescription)"
+                isSuccessAlert = false
+            } else {
+                alertMessage = "Your profile has been updated successfully!"
+                isSuccessAlert = true
+            }
+            showAlert = true
+        }
+    }
 }
-//
-//#Preview {
-//    EditProfileView(major: .constant(majors[0]), year: .constant(years[1]), description: .constant("Lorem ipsum dolor sit amet, consectetur adipiscing elit."))
-//}

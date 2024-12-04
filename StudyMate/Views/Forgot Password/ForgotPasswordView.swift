@@ -6,10 +6,13 @@
 //
 
 import SwiftUI
-
+import FirebaseAuth
 struct ForgotPasswordView: View {
-    @State private var email: String = ""
+//    @State private var email: String = ""
     @Environment(\.dismiss) var dismiss
+//    @State private var showAlert = false
+    @State private var email = ""
+    @State private var alertMessage = ""
     @State private var showAlert = false
 
     var body: some View {
@@ -43,15 +46,15 @@ struct ForgotPasswordView: View {
                             .background(.white)
                             .cornerRadius(16)
                         
-                        NavigationLink(destination: ResetPasswordView()) {
-                            Text("Submit")
-                                .bold()
-                                .padding()
-                                .frame(maxWidth: .infinity, alignment: .center)
-                                .background(.forest)
-                                .foregroundStyle(.beige)
-                                .cornerRadius(16)
-                        }
+//                        NavigationLink(destination: ResetPasswordView()) {
+//                            Text("Submit")
+//                                .bold()
+//                                .padding()
+//                                .frame(maxWidth: .infinity, alignment: .center)
+//                                .background(.forest)
+//                                .foregroundStyle(.beige)
+//                                .cornerRadius(16)
+//                        }
                         
 //                        Button(action: {
 //                            if (email == ""){
@@ -69,12 +72,44 @@ struct ForgotPasswordView: View {
 //                        .alert(isPresented: $showAlert) {
 //                            Alert(title: Text("Invalid Input"), message: Text("Please enter a valid email."), dismissButton: .default(Text("OK")))
 //                        }
+                        Button(action: {
+                            if email.isEmpty {
+                                alertMessage = "Please enter your email."
+                                showAlert = true
+                            }
+                            else if !isValidEmail(email) {
+                                alertMessage = "Please enter a valid email address."
+                                showAlert = true
+                            }
+                            else {
+                                forgotPassword(email: email) { result in
+                                    switch result {
+                                    case .success:
+                                        alertMessage = "Password reset email sent successfully."
+                                    case .failure(let error):
+                                        alertMessage = "Error: \(error.localizedDescription)"
+                                    }
+                                    showAlert = true
+                                }
+                            }
+                        }) {
+                            Text("Submit")
+                                .bold()
+                                .padding()
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                .background(.forest)
+                                .foregroundStyle(.beige)
+                                .cornerRadius(16)
+                        }
                     
                     }
                     
                     Spacer()
                 }
                 
+            }
+            .alert(isPresented: $showAlert) {
+                Alert(title: Text("Forgot Password"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
             }
             .navigationBarBackButtonHidden(true)
                     .toolbar {
@@ -97,6 +132,24 @@ struct ForgotPasswordView: View {
             
         }
     }
+    //
+    func isValidEmail(_ email: String) -> Bool {
+        let emailRegex = "^[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"
+        let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailRegex)
+        return emailPredicate.evaluate(with: email)
+    }
+
+    // Forget password
+    func forgotPassword(email: String, completion: @escaping (Result<Void, Error>) -> Void) {
+        Auth.auth().sendPasswordReset(withEmail: email) { error in
+            if let error = error {
+                completion(.failure(error)) // Pass the error to the completion handler
+            } else {
+                completion(.success(())) // Indicate success
+            }
+        }
+    }
+
 }
 
 #Preview {

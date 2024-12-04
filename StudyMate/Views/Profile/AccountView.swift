@@ -8,21 +8,9 @@
 import SwiftUI
 
 struct AccountView: View {
-//    @StateObject private var prevPostModel = PrevPostViewModel()
+    @ObservedObject var viewModel: ProfileViewModel
     @Environment(\.dismiss) var dismiss
     
- 
-    @Binding var profileIcon: String
-    
-    @State private var firstName = "Jane"
-    @State private var lastName = "Doe"
-    @State private var major = majors[0]
-    @State private var year = years[1]
-    @State private var email = "janedoe@mail.com"
-    @State private var description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-    @State private var username = "janedoe"
-    @State private var password = "password"
-    @State private var confirmPassword = "password"
     
     var body: some View {
         ZStack {
@@ -44,14 +32,15 @@ struct AccountView: View {
                     
                     
                     VStack(spacing: 25) {
-                        NavigationLink(destination: EditProfileView(major: $major, year: $year, description: $description, profileIcon: $profileIcon).navigationBarBackButtonHidden(true)) {
+                        // Edit Profile Navigation Link
+                        NavigationLink(destination: EditProfileView(major: viewModel.userProfile!.major, year: viewModel.userProfile!.year, profileIcon: viewModel.userProfile!.profilePicture).navigationBarBackButtonHidden(true)) {
                             HStack {
                                 Text("Edit Profile")
                                     .foregroundStyle(.forest)
                                     .fontWeight(.semibold)
                                 
                                 Spacer()
-
+                                
                                 Image(systemName: "chevron.right")
                                     .padding(6)
                                     .foregroundStyle(.black)
@@ -60,14 +49,19 @@ struct AccountView: View {
                             .frame(maxWidth: .infinity, maxHeight: 30, alignment: .leading)
                             .padding()
                             .cornerRadius(16)
-                            .background(.customGrey)
+                            .background(Color.customGrey)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 16)
-                                    .strokeBorder(.gray, lineWidth: 1)
+                                    .strokeBorder(Color.gray, lineWidth: 1)
                             )
                         }
                         
-                        NavigationLink(destination: EditPersonalInfoView(firstName: $firstName, lastName: $lastName, username: $username, password: $password, confirmPassword: $confirmPassword, email: $email).navigationBarBackButtonHidden(true)) {
+                        // Edit Personal Information Navigation Link
+                        NavigationLink(destination: EditPersonalInfoView(
+                            firstName: viewModel.userProfile?.firstName ?? "",
+                            lastName: viewModel.userProfile?.lastName ?? "",
+                            email: viewModel.userProfile?.email ?? ""
+                        ).navigationBarBackButtonHidden(true)) {
                             HStack {
                                 Text("Personal Information")
                                     .foregroundStyle(.forest)
@@ -83,15 +77,39 @@ struct AccountView: View {
                             .frame(maxWidth: .infinity, maxHeight: 30, alignment: .leading)
                             .padding()
                             .cornerRadius(16)
-                            .background(.customGrey)
+                            .background(Color.customGrey)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 16)
-                                    .strokeBorder(.gray, lineWidth: 1)
+                                    .strokeBorder(Color.gray, lineWidth: 1)
+                            )
+                        }
+                        
+                        // Reset Password Navigation Link
+                        NavigationLink(destination: PasswordView().navigationBarBackButtonHidden(true)) {
+                            HStack {
+                                Text("Reset Password")
+                                    .foregroundStyle(.forest)
+                                    .fontWeight(.semibold)
+                                
+                                Spacer()
+                                
+                                Image(systemName: "chevron.right")
+                                    .padding(6)
+                                    .foregroundStyle(.black)
+                                    .clipShape(Capsule())
+                            }
+                            .frame(maxWidth: .infinity, maxHeight: 30, alignment: .leading)
+                            .padding()
+                            .cornerRadius(16)
+                            .background(Color.customGrey)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 16)
+                                    .strokeBorder(Color.gray, lineWidth: 1)
                             )
                         }
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    
+
                     
                     
                     Spacer()
@@ -114,11 +132,10 @@ struct AccountView: View {
                     }
                 }
             }
+//            .onAppear() {
+//                copyProfileIcon = viewModel.userProfile?.profilePicture ?? ""
+//            }
             .padding(30)
         }
     }
 }
-
-//#Preview {
-//    AccountView()
-//}
