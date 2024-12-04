@@ -5,14 +5,17 @@
 //  Created by Maddie Adair on 10/20/24.
 //
 import SwiftUI
+import Firebase
 
 struct PrevPostRow: View {
-    var post: PrevPost
+    var post: UserPost
 
     
     var body: some View {
+        // go to deatil if clicked
         NavigationLink(destination: PrevPostDetailView(post: post)) {
             HStack {
+                // Title and descriptiong
                 VStack {
                     VStack(alignment: .leading, spacing: 6) {
                         Text(post.title)
@@ -35,7 +38,7 @@ struct PrevPostRow: View {
                 
                 Spacer()
                 
-                Text(post.formattedDT)
+                Text(formatDate(from: post.createdAt))
                     .frame(alignment: .trailing)
                     .foregroundStyle(.black)
                     .font(.system(size: 12))
@@ -47,8 +50,14 @@ struct PrevPostRow: View {
         .background(.multiplyBeige)
         .cornerRadius(16)
     }
+    func formatDate(from timestamp: Timestamp) -> String {
+        let date = timestamp.dateValue() // Convert Timestamp to Date
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMMM dd, yyyy" // Set the desired format
+        return formatter.string(from: date)
+    }
 }
 
-#Preview {
-    PrevPostRow(post: PrevPost( title: "Example", description: "Example", datetime: "2024-10-20T18:06:05.299Z", subject: "Architecture", image: ["https://avatar.iran.liara.run/public/3"].compactMap { URL(string:$0) }))
-}
+//#Preview {
+//    PrevPostRow(post: PrevPost( title: "Example", description: "Example", datetime: "2024-10-20T18:06:05.299Z", subject: "Architecture", image: ["https://avatar.iran.liara.run/public/3"].compactMap { URL(string:$0) }))
+//}

@@ -6,9 +6,9 @@
 //
 
 import SwiftUI
-
+import Firebase
 struct PrevPostDetailView: View {
-    var post: PrevPost
+    var post: UserPost
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
@@ -35,7 +35,7 @@ struct PrevPostDetailView: View {
                             
                             Spacer()
                             
-                            Text(post.formattedDT)
+                            Text(formatDate(from: post.createdAt))
                                 .frame(alignment: .trailing)
                                 .foregroundStyle(.black)
                                 .font(.system(size: 14))
@@ -48,20 +48,31 @@ struct PrevPostDetailView: View {
                     Text(post.description)
                     
                     ScrollView(.horizontal, showsIndicators: true) {
-                        HStack() {
-                            ForEach(post.image, id: \.self) { i in
-                                AsyncImage(url: i) { image in
-                                    image
-                                        .resizable()
-                                        .scaledToFill()
-                                        .frame(width: .infinity, height: 200)
-                                    
-                                } placeholder: {
-                                    ProgressView()
+                        HStack {
+                            ForEach(post.images, id: \.self) { imageUrlString in
+                                if let imageUrl = URL(string: imageUrlString) {
+                                    AsyncImage(url: imageUrl) { image in
+                                        image
+                                            .resizable()
+                                            .scaledToFill()
+                                            .frame(width: 200, height: 200) // Adjust width and height as needed
+                                            .clipShape(RoundedRectangle(cornerRadius: 10)) // Optional: Add styling
+                                    } placeholder: {
+                                        ProgressView()
+                                            .frame(width: 200, height: 200) // Match the size for consistency
+                                    }
+                                } else {
+                                    // Fallback for invalid URLs
+                                    Text("Invalid URL")
+                                        .frame(width: 200, height: 200)
+                                        .background(Color.gray.opacity(0.3))
+                                        .foregroundColor(.red)
+                                        .clipShape(RoundedRectangle(cornerRadius: 10)) // Optional styling
                                 }
                             }
                         }
                     }
+
                     
                     Spacer()
                     
@@ -87,9 +98,11 @@ struct PrevPostDetailView: View {
             .padding(30)
         }
     }
-}
-
-#Preview {
-    PrevPostDetailView(post: prevPosts[4])
+    func formatDate(from timestamp: Timestamp) -> String {
+        let date = timestamp.dateValue() // Convert Timestamp to Date
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMMM dd, yyyy" // Set the desired format
+        return formatter.string(from: date)
+    }
 }
 

@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct PostHistoryView: View {
-//    @StateObject private var prevPostModel = PrevPostViewModel()
+//    @Binding var viewModel: ProfileViewModel
+    @ObservedObject var viewModel: ProfileViewModel
     @Environment(\.dismiss) var dismiss
 
     var body: some View {
@@ -19,22 +20,25 @@ struct PostHistoryView: View {
             ScrollView(showsIndicators: false) {
                 VStack {
                     Text("Post History")
-                    //                    .font(.system(size: 32, weight: .semibold))
-                    
                         .font(.custom("InstrumentSerif-Regular", size: 48))
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.top, 40)
                     
                     Spacer()
                         .frame(height: 50)
-                    
-                    VStack(spacing: 25) {
-                        ForEach(prevPosts, id: \.id) { post in
-                            PrevPostRow(post: post)
-                        }
+                    //
+                    if viewModel.userPosts.isEmpty {
+                        // add Style
+                        Text("You no post yet.")
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    
+                    else{
+                        VStack(spacing: 25) {
+                            ForEach(viewModel.userPosts, id: \.id) { post in
+                                PrevPostRow(post:post)
+                            }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    }
                     Spacer()
                 }
             }
@@ -55,11 +59,12 @@ struct PostHistoryView: View {
                     }
                 }
             }
+            .onAppear {
+                Task {
+                    await viewModel.fetchCurrentUserPosts()
+                }
+            }
             .padding(30)
         }
     }
-}
-
-#Preview {
-    PostHistoryView()
 }

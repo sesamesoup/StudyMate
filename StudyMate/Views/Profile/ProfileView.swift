@@ -10,20 +10,11 @@ import FirebaseAuth
 
 struct ProfileView: View {
     //
-    //
+    // Getting the view model
     @StateObject private var viewModel = ProfileViewModel()
     @AppStorage("navigateToHome") var navigateToHome: Bool = false
-    //
-//    @State private var firstName = "Jane"
-//    @State private var lastName = "Doe"
-//    @State private var major = majors[0]
-//    @State private var year = years[1]
     @State private var profileIcon = "girl1"
-//    @State private var email = "janedoe@mail.com"
-//    @State private var description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-//    @State private var username = "janedoe"
-//    @State private var password = "password"
-//    @State private var confirmPassword = "password"
+
 
 
     var body: some View {
@@ -31,11 +22,12 @@ struct ProfileView: View {
             Color.lightBeige
                 .ignoresSafeArea()
             
-            
+            // Main Stack
             VStack(spacing: 40) {
                 RoundedRectangle(cornerRadius: 50,
                                  style: .continuous)
                 .aspectRatio(1.4, contentMode: .fill)
+                // profile picture
                 .overlay(
                     Image(viewModel.userProfile?.profilePicture ?? "person.circle.fill")
                         .resizable()
@@ -46,6 +38,7 @@ struct ProfileView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 50,
                                             style: .continuous))
                 
+                // ------ First, Last, user, subject and year
                 VStack(alignment: .center, spacing: 50) {
                     VStack(spacing: 14) {
                         VStack(spacing: 6) {
@@ -65,22 +58,14 @@ struct ProfileView: View {
                             .foregroundStyle(.black)
                     }
                     
-//                    VStack(spacing: 20) {
-//                        
-//                        
-//                        Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit.")a
-//                            .foregroundStyle(.black)
-//                            .multilineTextAlignment(.center)
-//                            .fixedSize(horizontal: false, vertical: true)
-//                    }
                     
                 }
                 .frame(maxWidth: .infinity)
-                
+                //----------------------------------------------------
                 //                Spacer()
                 
                 VStack(spacing: 20) {
-                    
+                    // --------------- Account View --------------------
                     NavigationLink(destination: AccountView(profileIcon: $profileIcon).navigationBarBackButtonHidden(true)) {
                         HStack {
                             Text("Account")
@@ -104,8 +89,8 @@ struct ProfileView: View {
                                 .strokeBorder(.gray, lineWidth: 1)
                         )
                     }
-                    
-                    NavigationLink(destination: PostHistoryView().navigationBarBackButtonHidden(true)) {
+                    // ---------------------- Post History -----------------------------------------
+                    NavigationLink(destination: PostHistoryView(viewModel:viewModel).navigationBarBackButtonHidden(true)) {
                         HStack {
                             Text("Post History")
                                 .foregroundStyle(.forest)
@@ -128,11 +113,8 @@ struct ProfileView: View {
                                 .stroke(.gray, lineWidth: 1)
                         )
                     }
-//                    NavigationLink(destination: LogInView().navigationBarBackButtonHidden(true)) {
-//                        Text("Log Out")
-//                            .foregroundStyle(.beige)
-//                            .fontWeight(.semibold)
-//                    }
+
+                    //------------------ Logout -------------------
                     Button(action: {
                         logOutUser()
                     }) {
@@ -144,6 +126,7 @@ struct ProfileView: View {
                     .padding()
                     .background(.forest)
                     .cornerRadius(16)
+                    //------------------------------------------------
                 }
                 .frame(maxWidth: .infinity)
                 
@@ -155,7 +138,7 @@ struct ProfileView: View {
                 Task {
                     if let userID = Auth.auth().currentUser?.uid {
                         await viewModel.fetchUserProfile(userID: userID)
-                        print(viewModel.userProfile)
+                        print(viewModel.userProfile as Any)
                     }
                 }
             }

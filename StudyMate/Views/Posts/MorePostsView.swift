@@ -8,17 +8,21 @@
 import SwiftUI
 
 struct MorePostsView: View {
-    @State var shouldPresentSheet = false
-//    @State private var filteredResults = PostViewModel().posts
-//    @StateObject private var viewModel = PostViewModel()
+    
+    //
     @State private var searchText = ""
     @State private var majorSelection: String?
     @State private var showSheet = false
+    //
+    @State private var allPosts: [AllUserPosts] = []
+    // for alert
+    @State private var showFilterAlert = false
+    @State private var alertMessage = ""
     
-    @Environment(\.dismiss) var dismiss
     
-    @State private var filteredResults = postArr
-
+    //    @State private var filteredResults = postArr
+    @State private var filteredResults: [AllUserPosts] = []
+    
     
     var body: some View {
         
@@ -26,6 +30,7 @@ struct MorePostsView: View {
             Color.lightBeige
                 .ignoresSafeArea()
             VStack(alignment: .leading, spacing: 40) {
+                // Explore title------------------------
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Explore")
                         .font(.custom("InstrumentSerif-Regular", size: 48))
@@ -35,6 +40,7 @@ struct MorePostsView: View {
                     
                 }
                 
+                // Filter Sheet ------------------------
                 Button(action: {
                     showSheet = true
                 }) {
@@ -47,28 +53,7 @@ struct MorePostsView: View {
                         .cornerRadius(12)
                 }
                 
-                //                    VStack(alignment: .leading, spacing: 20) {
-                //                        Text("Subject")
-                //
-                //                        Picker("Select Major", selection: $majorSelection)
-                //                        {
-                //                            Text("Please Select One").tag(String?.none)
-                //
-                //                            ForEach(majors, id: \.self) {
-                //                                Text($0).tag($0)
-                //                            }
-                //                        }
-                //                        .pickerStyle(.menu)
-                //                        .accentColor(.gray)
-                //                        .padding()
-                //                        .frame(maxWidth: .infinity, alignment: .leading)
-                //                        .background(.white)
-                //                        .overlay(
-                //                            RoundedRectangle(cornerRadius: 16)
-                //                                .stroke(Color.gray)
-                //                        )
-                //                    }
-                
+                //  filtered Results------------------------
                 ScrollView {
                     VStack {
                         ForEach(filteredResults) { post in
@@ -78,55 +63,41 @@ struct MorePostsView: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 
-                Spacer()
+                //Spacer()
                 
             }
             .padding(30)
             .navigationBarBackButtonHidden(true)
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button(action: {
-                        dismiss()
-                    }) {
-                        HStack(spacing: 10) {
-                            Image(systemName: "arrow.left")
-                                .foregroundStyle(.forest)
-                            
-                            Text("Back")
-                                .foregroundStyle(.forest)
-                        }
-                        
-                    }
-                }
-            }
+            
+            // ------------------------- Search Sheet -------------------------
             .sheet(isPresented: $showSheet) {
                 VStack(spacing: 40) {
                     Spacer()
                     VStack( alignment: .leading, spacing: 40) {
                         VStack(alignment: .leading, spacing: 20) {
-                             Text("Search")
+                            Text("Search")
                                 .fontWeight(.semibold)
-    
+                            
                             TextField("Search posts by title", text: $searchText, prompt: Text("\(Image(systemName: "magnifyingglass")) Search"))
-                            .accentColor(.forest)
-                            .padding()
-                            .background(.white)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .cornerRadius(16)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 16)
-                                    .stroke(Color.forest)
-                            )
+                                .accentColor(.forest)
+                                .padding()
+                                .background(.white)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .cornerRadius(16)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 16)
+                                        .stroke(Color.forest)
+                                )
                         }
                         
                         VStack(alignment: .leading, spacing: 20) {
                             Text("Subject")
                                 .fontWeight(.semibold)
-    
+                            
                             Picker("Select Subject", selection: $majorSelection)
                             {
                                 Text("Please Select One").tag(String?.none)
-    
+                                
                                 ForEach(majors, id: \.self) {
                                     Text($0).tag($0)
                                 }
@@ -161,7 +132,9 @@ struct MorePostsView: View {
                         }
                         
                         Button(action: {
+                            print("calling search results")
                             searchResults()
+                            showSheet = false
                         }) {
                             Text("Apply")
                                 .bold()
@@ -173,56 +146,88 @@ struct MorePostsView: View {
                         }
                     }
                 }
-
+                
+                
+                .padding()
+                .presentationBackground(.lightBeige)
+                //                            .interactiveDismissDisabled()
+                .presentationDetents([.fraction(0.55)])
+                .presentationCornerRadius(30)
+                
+            }
             
-            .padding()
-            .presentationBackground(.lightBeige)
-//                            .interactiveDismissDisabled()
-            .presentationDetents([.fraction(0.55)])
-            .presentationCornerRadius(30)
-            
+            // ------------- Search Sheet end --------------------------------
+        }
+        .alert(isPresented: $showFilterAlert) {
+            Alert(
+                title: Text("No Results Found"),
+                message: Text(alertMessage),
+                dismissButton: .default(Text("Reset filter"), action: {
+                    resetFilter()
+                    showFilterAlert = false
+                })
+            )
+        }
+        .onAppear {
+            loadPostsForOtherUsers { posts in
+                let sortedPosts = posts.sorted {
+                    $0.createdAt.dateValue() > $1.createdAt.dateValue()
+                }
+                self.allPosts = sortedPosts
+                print(posts)
+                self.filteredResults = sortedPosts
+            }
         }
         
         
-    }
-    
-    //            .navigationTitle("More Posts")
-    //            .navigationBarTitleDisplayMode(.large)
-    //            .frame(maxWidth: 350)
-    
-    
-    //        .searchable(text: $searchText)
-    
-}
-
-func searchResults() {
-    if searchText.isEmpty && (majorSelection == nil) {
-        showSheet = false
-         return
-    } else {
-        var res: [Post] = postArr
         
+        
+        
+    }
+    //
+    
+    // ------------- Function for Search -------------------------------------
+    
+    func searchResults() {
+        // Reset filtered results to allPosts
+        var results = allPosts
+        
+        // Filter by searchText (matches title or description)
         if !searchText.isEmpty {
-            res = res.filter { $0.title.lowercased().contains(searchText.lowercased()) }
+            results = results.filter { post in
+                post.title.lowercased().contains(searchText.lowercased()) ||
+                post.description.lowercased().contains(searchText.lowercased())
+            }
         }
-        if (majorSelection != nil) {
-            res = res.filter { $0.subject.contains(majorSelection!) }
-        }
-        filteredResults = res
         
-        showSheet = false
+        // Filter by majorSelection (subject)
+        if let selectedMajor = majorSelection, !selectedMajor.isEmpty {
+            results = results.filter { post in
+                post.subject == selectedMajor
+            }
+        }
+        
+        // Check if filtered results are empty
+        if results.isEmpty {
+            showSheet = false
+            print("Result is empty")
+            alertMessage = "No posts match your filters. Try adjusting your search."
+            DispatchQueue.main.async {
+                self.showFilterAlert = true // Present the alert after the sheet is dismissed
+            }
+        } else {
+//            showFilterAlert = false
+            filteredResults = results
+            showSheet = false // Dismiss the filter sheet
+        }
     }
-}
     
+    // Reset
     func resetFilter() {
-        filteredResults = postArr
+        filteredResults = self.allPosts
         searchText = ""
         majorSelection = nil
         showSheet = false
     }
-
+    
 }
-
-//#Preview {
-//    MorePostsView()
-//}

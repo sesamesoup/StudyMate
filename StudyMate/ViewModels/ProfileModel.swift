@@ -18,12 +18,24 @@ struct UserProfile: Identifiable, Codable {
     var username: String
     var year: String
 }
+//
+struct UserPost: Identifiable, Codable {
+    var id: String // postID (Auto-generated Firestore document ID)
+    var createdAt: Timestamp // Timestamp when the post was created
+    var description: String // Description of the post
+    var images: [String] // Array of image URLs
+    var subject: String // Subject of the post
+    var title: String // Title of the post
+}
+
 
 
 import Firebase
+import FirebaseAuth
 @MainActor
 class ProfileViewModel: ObservableObject {
-    @Published var userProfile: UserProfile? // The fetched user profile
+    @Published var userProfile: UserProfile?
+    @Published var userPosts: [UserPost] = []
     @Published var isLoading: Bool = false
     @Published var errorMessage: String? = nil
     
@@ -56,6 +68,77 @@ class ProfileViewModel: ObservableObject {
         
         isLoading = false
     }
-    // Update User Selection
+    
+    //
+    // Fetching all posts for the current user
+    //    func fetchCurrentUserPosts() async {
+    //        guard let currentUserID = Auth.auth().currentUser?.uid else {
+    //            errorMessage = "No logged-in user."
+    //            return
+    //        }
+    //
+    //        isLoading = true
+    //        errorMessage = nil
+    //
+    //        do {
+    //            let snapshot = try await Firestore.firestore()
+    //                .collection("users")
+    //                .document(currentUserID)
+    //                .collection("posts")
+    //                .getDocuments()
+    //
+    //            self.userPosts = snapshot.documents.compactMap { document in
+    //                try? document.data(as: UserPost.self)
+    //            }
+    //
+    //            if userPosts.isEmpty {
+    //                errorMessage = "You have not added any posts yet."
+    //            }
+    //        } catch {
+    //            errorMessage = "Failed to fetch your posts: \(error.localizedDescription)"
+    //        }
+    //
+    //        isLoading = false
+    //    }
+    
+    // Fetching all posts for the current user
+    func fetchCurrentUserPosts() async {
+        guard let currentUserID = Auth.auth().currentUser?.uid else {
+            DispatchQueue.main.async {
+                self.errorMessage = "No logged-in user."
+                self.userPosts = [] // Clear posts if no user is logged in
+            }
+            return
+        }
+        
+        isLoading = true
+        errorMessage = nil
+        userPosts = [] // Reset to ensure a clean state before fetching
+        
+        do {
+            let snapshot = try await Firestore.firestore()
+                .collection("users")
+                .document(currentUserID)
+                .collection("posts")
+                .getDocuments()
+            
+            let posts = snapshot.documents.compactMap { document in
+                try? document.data(as: UserPost.self)
+            }
+            
+            DispatchQueue.main.async {
+                self.userPosts = posts
+                if posts.isEmpty {
+                    self.errorMessage = "You have not added any posts yet."
+                }
+            }
+        } catch {
+            DispatchQueue.main.async {
+                self.errorMessage = "Failed to fetch your posts: \(error.localizedDescription)"
+                self.userPosts = [] // Clear posts in case of an error
+            }
+        }
+    }
+
     
 }

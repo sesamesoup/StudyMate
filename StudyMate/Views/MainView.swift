@@ -15,7 +15,8 @@ struct MainView: View {
         NavigationStack {
             VStack {
                 TabView(selection: $activeTabIndex) {
-                    HomeView()
+                    // Change this
+                    MorePostsView()
                         .tabItem {
                             if (activeTabIndex == 0){
                                 Image(systemName: "house.fill")
@@ -27,14 +28,14 @@ struct MainView: View {
                         }.tag(0)
                         .onAppear { self.activeTabIndex = 0 }
                     
-                    
-                    NotificationsView()
+                    // changing to add post View
+                    AddPostView()
                         .tabItem {
                             if (activeTabIndex == 1){
-                                Image(systemName: "bell.fill")
+                                Image(systemName: "plus.square.fill")
                                     .environment(\.symbolVariants, .none)
                             } else {
-                                Image(systemName: "bell")
+                                Image(systemName: "plus.square")
                                     .environment(\.symbolVariants, .none)
                             }
                         }.tag(1)
