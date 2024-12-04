@@ -5,129 +5,6 @@
 //  Created by Maddie Adair on 11/19/24.
 //
 //
-//import SwiftUI
-//
-//struct EditProfileView: View {
-//    @Environment(\.dismiss) var dismiss
-//    //
-//    @State var major: String
-//    @State var year: String
-//    @State var profileIcon: String
-//
-//    @State private var showAlert = false
-//    @State private var alertMessage = ""
-//    @State private var emailError = ""
-//    @State private var passwordError = ""
-//    
-//    var body: some View {
-//        ZStack {
-//            Color.lightBeige
-//                .ignoresSafeArea()
-//            
-//            VStack(spacing: 40) {
-//                // getting profile view
-//                NavigationLink(destination: EditProfilePicView(profileIcon: $profileIcon)) {
-//                    RoundedRectangle(cornerRadius: 50,
-//                                     style: .continuous)
-//                    .aspectRatio(1.4, contentMode: .fill)
-//                    .overlay(
-//                        Image(profileIcon)
-//                            .resizable()
-//                            .scaledToFill()
-//                            .offset(x: -30.0, y: 20.0)
-//                    )
-//                    .frame(width: 150, height: 150, alignment: .leading)
-//                    .clipShape(RoundedRectangle(cornerRadius: 50,
-//                                                style: .continuous))
-//                }
-//                
-//                // Years
-//                VStack(alignment: .center, spacing: 50) {
-//                    VStack(alignment: .leading, spacing: 22) {
-//                        
-//                        Text("Year")
-//                            .fontWeight(.bold)
-//                        
-//                        Picker("-- Select a year --", selection: $year) {
-//                            ForEach(years, id: \.self) {
-//                                Text($0)
-//                            }
-//                        }
-//                        .pickerStyle(.menu)
-//                        .accentColor(.forest)
-//                        .frame(maxWidth: .infinity, maxHeight: 30, alignment: .leading)
-//                        .padding()
-//                        .cornerRadius(16)
-//                        .background(.customGrey)
-//                        .overlay(
-//                            RoundedRectangle(cornerRadius: 16)
-//                                .strokeBorder(.gray, lineWidth: 1)
-//                        )
-//                        
-//                        // Major
-//                        Text("Major")
-//                            .fontWeight(.bold)
-//
-//                        Picker("-- Select a major --", selection: $major) {
-//                            ForEach(majors, id: \.self) {
-//                                Text($0)
-//                            }
-//                        }
-//                        .pickerStyle(.menu)
-//                        .accentColor(.forest)
-//                        .frame(maxWidth: .infinity, maxHeight: 30, alignment: .leading)
-//                        .padding()
-//                        .cornerRadius(16)
-//                        .background(.customGrey)
-//                        .overlay(
-//                            RoundedRectangle(cornerRadius: 16)
-//                                .strokeBorder(.gray, lineWidth: 1)
-//                        )
-//                    }
-//                    
-//                }
-//                .frame(maxWidth: .infinity)
-//                            
-//                Button(action: {
-//                    
-//                }) {
-//                    Text("Confirm")
-//                        .bold()
-//                        .padding()
-//                        .frame(maxWidth: .infinity, alignment: .center)
-//                        .background(.forest)
-//                        .foregroundStyle(.beige)
-//                        .cornerRadius(16)
-//                }
-//                .alert(isPresented: $showAlert) {
-//                    Alert(title: Text("Invalid Input"), message: Text("Please fill out all fields."), dismissButton: .default(Text("OK")))
-//                }
-//                
-//                
-//                Spacer()
-//            }
-//            .navigationBarBackButtonHidden(true)
-//            .toolbar {
-//                ToolbarItem(placement: .topBarLeading) {
-//                    Button(action: {
-//                        dismiss()
-//                    }) {
-//                        HStack(spacing: 10) {
-//                            Image(systemName: "arrow.left")
-//                                .foregroundStyle(.forest)
-//                            
-//                            Text("Cancel")
-//                                .foregroundStyle(.forest)
-//                        }
-//                        
-//                    }
-//                }
-//            }
-//            .padding(30)
-//        }
-//    }
-//}
-//
 
 import SwiftUI
 import Firebase
@@ -152,16 +29,29 @@ struct EditProfileView: View {
             VStack(spacing: 40) {
                 // Profile Picture
                 NavigationLink(destination: EditProfilePicView(profileIcon: $profileIcon)) {
-                    RoundedRectangle(cornerRadius: 50, style: .continuous)
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 50,
+                                         style: .continuous)
                         .aspectRatio(1.4, contentMode: .fill)
                         .overlay(
+                            
                             Image(profileIcon)
                                 .resizable()
                                 .scaledToFill()
                                 .offset(x: -30.0, y: 20.0)
+                            
+                            
                         )
                         .frame(width: 150, height: 150, alignment: .leading)
-                        .clipShape(RoundedRectangle(cornerRadius: 50, style: .continuous))
+                        .clipShape(RoundedRectangle(cornerRadius: 50,
+                                                    style: .continuous))
+                        Image(systemName: "pencil")
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 40, height: 40)
+                            .foregroundStyle(Color.black)
+                            .offset(x: 50.0, y: 50.0)
+                    }
                 }
                 
                 // Years and Major
