@@ -29,6 +29,8 @@ class ChatLogViewModel: ObservableObject{
     @Published var errorMessage = ""
     @Published var chatMessages = [ChatMessages] ()
     //
+    @Published var count = 0
+    //
     let recieverUser : OtherUser?
     //--------------------------------------------------
     // init
@@ -54,6 +56,7 @@ class ChatLogViewModel: ObservableObject{
         //
         Firestore.firestore().collection("messages")
             .document(fromID).collection(toID)
+            .order(by: "timestamp")
             .addSnapshotListener { querySnapshot, error in
                 if let error {
                     //
@@ -63,15 +66,30 @@ class ChatLogViewModel: ObservableObject{
                     return
                 }
                 //
-                querySnapshot?.documents.forEach({queryDocumentSnapshot in
-                    let data = queryDocumentSnapshot.data()
-                    // getting document id
-                    let docID = queryDocumentSnapshot.documentID
-                    let chatMessage = ChatMessages(documentID: docID, data: data)
-                    self.chatMessages.append(chatMessage)
-                    
+                querySnapshot?.documentChanges.forEach({documentChange in
+                    if documentChange.type == .added{
+                        let data = documentChange.document.data()
+                        self.chatMessages.append(ChatMessages(documentID: documentChange.document.documentID, data: data))
+
+                    }
                 })
+                //
+//                querySnapshot?.documents.forEach({queryDocumentSnapshot in
+//                    let data = queryDocumentSnapshot.data()
+//                    // getting document id
+//                    let docID = queryDocumentSnapshot.documentID
+//                    let chatMessage = ChatMessages(documentID: docID, data: data)
+//                    self.chatMessages.append(chatMessage)
+//                    
+//                })
+                DispatchQueue.main.async {
+                    self.count+=1
+                }
+                
             }
+        //
+       
+        
     }
     
     //
@@ -107,6 +125,8 @@ class ChatLogViewModel: ObservableObject{
         }
         //
         print("Able to save mess in FromID")
+        self.chatText = ""
+        self.count+=1
         //
         let recipientChatRef = db.collection("messages")
             .document(toID)

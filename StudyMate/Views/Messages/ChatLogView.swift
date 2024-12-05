@@ -6,7 +6,8 @@
 //
 
 import SwiftUI
-
+import Firebase
+import FirebaseAuth
 struct ChatLogView:View{
     //
   
@@ -27,23 +28,62 @@ struct ChatLogView:View{
         VStack {
             // scroll View
             ScrollView{
-                ForEach(chatLogVM.chatMessages){ message in                    
-                    HStack {
-                        Spacer()
-                        HStack{
-                            Text(message.text)
+                // Proxy
+                ScrollViewReader{ scrollViewProxy in
+                    
+                    VStack{
+                        ForEach(chatLogVM.chatMessages){ message in
+                            VStack{
+                                if message.fromID == Auth.auth().currentUser?.uid {
+                                    HStack {
+                                        Spacer()
+                                        HStack{
+                                            Text(message.text)
+                                        }
+                                        .padding()
+                                        .background(.blue)
+                                        .foregroundColor(.white)
+                                        .cornerRadius(8)
+                                    }
+                                    .padding(.horizontal)
+                                    .padding(.top, 8)
+                                }
+                                else{
+                                    HStack {
+                                        
+                                        HStack{
+                                            Text(message.text)
+                                        }
+                                        .padding()
+                                        .background(.green)
+                                        .foregroundColor(.white)
+                                        .cornerRadius(8)
+                                        Spacer()
+                                    }
+                                    .padding(.horizontal)
+                                    .padding(.top, 8)
+                                }
+                            }
+                            
                         }
-                        .padding()
-                        .background(.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(8)
+                        HStack{Spacer()}
+                            .id("Empty")
                     }
-                    .padding(.horizontal)
-                    .padding(.top, 8)
+                    .onReceive(chatLogVM.$count) { _ in
+                        withAnimation(.easeOut(duration: 0.5)){
+                            scrollViewProxy.scrollTo("Empty", anchor: .bottom)
+                        }
+                       
+                    }
                 }
             }
-            .background(Color.forest)
+            .background(Color.lightBeige)
             .navigationTitle(chatUser?.username ?? "Chat")
+//            .navigationBarItems(trailing: Button(action: {
+//                chatLogVM.count+=1
+//            }, label: {
+//                Text("count\(chatLogVM.count)")
+//            }))
             .navigationBarTitleDisplayMode(.inline)
             //
             HStack(spacing:12){               //
@@ -76,9 +116,9 @@ struct ChatLogView:View{
             .padding(.horizontal)
             
         }
-        .onAppear() {
-            
-        }
+//        .onAppear() {
+//            
+//        }
     }
     
 }
