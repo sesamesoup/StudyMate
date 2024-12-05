@@ -142,6 +142,8 @@ class ChatLogViewModel: ObservableObject{
     
     //
     func prsistRecentMessage(){
+        // copy text
+        let copyText = self.chatText
         guard let fromID = Auth.auth().currentUser?.uid else { return }
         //
         guard let toID = self.recieverUser?.uid, !toID.isEmpty else {
@@ -172,6 +174,59 @@ class ChatLogViewModel: ObservableObject{
                 return
             }
         }
+        //
+        let recieverDocument = Firestore.firestore().collection("recent_messages")
+            .document(toID)
+            .collection("messages")
+            .document(fromID)
+        print("In presistent Chat text is\(self.chatText)")
+        //
+        
+        //
+        fetchUserProfile(userID: fromID) { username, profileImage in
+            let recieverData = [
+                "timestamp": Timestamp(),
+                "text": copyText,
+                "fromID": fromID,
+                "toID": toID,
+                "profileImage": profileImage,
+                "username": username
+            ] as [String: Any]
+            //
+            print("Adding to reciever")
+            recieverDocument.setData(recieverData) { error in
+                if let error {
+                    print("Error: \(error)")
+                    return
+                }
+            }
+            print("Function end pristent")
+        }
+
     }
+    //========================================
+
+    //
+    func fetchUserProfile(userID: String, completion: @escaping (String, String) -> Void) {
+        Firestore.firestore().collection("users").document(userID).getDocument { documentSnapshot, error in
+            if let error = error {
+                print("Failed to fetch user profile: \(error.localizedDescription)")
+                completion("Unknown", "")
+                return
+            }
+            
+            guard let data = documentSnapshot?.data() else {
+                print("No data found for userID: \(userID)")
+                completion("Unknown", "")
+                return
+            }
+            
+            let username = data["username"] as? String ?? "Unknown"
+            let profilePicture = data["profilePicture"] as? String ?? ""
+            
+            completion(username, profilePicture)
+        }
+    }
+
 }
 

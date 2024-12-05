@@ -10,49 +10,6 @@ import FirebaseAuth
 import FirebaseFirestore
 import Firebase
 
-//struct InboxView: View {
-//    // Imbox View
-//    @StateObject private var chatModel = ChatRequestModel()
-//    @StateObject private var chatsModel = ChatModel()
-//
-//    var body: some View {
-//        ZStack {
-//            Color.lightBeige
-//                .ignoresSafeArea()
-//            // Main stack
-//            VStack(alignment: .leading) {
-//                
-//                Text("Inbox")
-//                    .font(.custom("InstrumentSerif-Regular", size: 48))
-//                
-//                Spacer()
-//                    .frame(height: 50)
-//                
-//                if (chatsModel.chats.count > 0){
-//                    
-//                    VStack {
-//                        ForEach(chatsModel.chats) { chat in
-//                                ChatRow(chat: chat)
-//                            }
-//                        }
-//                    }
-//                else {
-//                    Text("Nothing here to see!")
-//                        .frame(maxWidth: .infinity, alignment: .leading)
-//                }
-//                
-//                Spacer()
-//                
-//            }
-//            .padding(30)
-//            
-//        }
-//    }
-//}
-
-//
-
-
 struct InboxView: View {
     // Creating ViewModel
     @ObservedObject private var vm = MainMessageViewModel()
@@ -85,6 +42,10 @@ struct InboxView: View {
                         }
                         
                         Button(action: {
+//                            print(vm.recentMessages)
+                            for message in vm.recentMessages {
+                                print("Username: \(message.username), FromID: \(message.fromID)")
+                            }
                             showNewMessage.toggle() // Show the new message screen
                         }) {
                             Spacer()
@@ -96,6 +57,7 @@ struct InboxView: View {
                                 .foregroundColor(Color.beige) // Ensure `.beige` is a valid color
                                 .cornerRadius(16)
                         }
+                        //
                         .fullScreenCover(isPresented: $showNewMessage) {
                             CreateNewMessageView(didSelectNewUser: { user in
                                 print("didSelectNewUser: \(user.email)")
@@ -115,17 +77,11 @@ struct InboxView: View {
                     ScrollView() {
                         VStack {
                             ForEach(vm.recentMessages) { recentMessage in
-                                // Row
-                                NavigationLink{
-                                    //Text("Destination")
-                                    //ChatLogView(selectedUser)
-                                } label:{
-                                    
+                                Button(action: {
+                                    fetchUserAndNavigate(username: recentMessage.username)
+                                }) {
                                     VStack {
-                                        HStack(spacing:16){
-//                                            Image(systemName: "person.fill")
-//                                            Image(recentMessage.profileImage)
-//                                                .font(.system(size: 32))
+                                        HStack(spacing: 16) {
                                             RoundedRectangle(cornerRadius: 10, style: .continuous)
                                                 .aspectRatio(1.2, contentMode: .fill)
                                                 .overlay(
@@ -136,9 +92,8 @@ struct InboxView: View {
                                                 )
                                                 .frame(width: 40, height: 40, alignment: .leading)
                                                 .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-
-                                            //
-                                            VStack(alignment: .leading){
+                                            
+                                            VStack(alignment: .leading) {
                                                 Text("\(recentMessage.username)")
                                                 Text("\(recentMessage.text)")
                                                     .font(.system(size: 12))
@@ -146,15 +101,17 @@ struct InboxView: View {
                                             }
                                             
                                             Spacer()
-//                                            Text("Date Last sent")
                                             Text(timeAgoSince(recentMessage.timestamp))
                                         }
                                     }
                                 }
                                 Divider()
                             }
+
                             
                         }
+                        
+                        // Modify the NavigationLink inside the ForEach
                     }
                     .scrollIndicators(.hidden)
                 }
@@ -171,6 +128,99 @@ struct InboxView: View {
             
         }
     }
+    private func fetchUserAndNavigate(username: String) {
+        fetchUserByUsername(username: username) { user in
+            guard let user = user else {
+                print("No user found with username: \(username)")
+                return
+            }
+            DispatchQueue.main.async {
+                self.selectedUser = user
+                self.shouldNavigateToChatLogView = true
+            }
+        }
+    }
+
+    //
+//    func fetchUserByUsername(username: String, completion: @escaping (OtherUser?) -> Void) {
+//        Firestore.firestore().collection("users")
+//            .whereField("username", isEqualTo: username)
+//            .getDocuments { querySnapshot, error in
+//                if let error = error {
+//                    print("Error fetching user by username: \(error.localizedDescription)")
+//                    completion(nil)
+//                    return
+//                }
+//                
+//                guard let documents = querySnapshot?.documents, let document = documents.first else {
+//                    print("No user found with username: \(username)")
+//                    completion(nil)
+//                    return
+//                }
+//                
+//                let data = document.data()
+//                let userID = document.documentID
+//                
+//                let user = OtherUser(
+//                    uid: userID,
+//                    email: data["email"] as? String ?? "",
+//                    firstName: data["firstName"] as? String ?? "",
+//                    lastName: data["lastName"] as? String ?? "",
+//                    major: data["major"] as? String ?? "",
+//                    year: data["year"] as? String ?? "",
+//                    profilePicture: data["profilePicture"] as? String ?? "",
+//                    username: data["username"] as? String ?? ""
+//                )
+//                
+//                completion(user)
+//            }
+//    }
+    
+    
+    func fetchUserByUsername(username: String, completion: @escaping (OtherUser?) -> Void) {
+        Firestore.firestore().collection("users")
+            .whereField("username", isEqualTo: username)
+            .getDocuments(source: .default){ querySnapshot, error in
+                if let error = error {
+                    print("Error fetching user by username: \(error.localizedDescription)")
+                    completion(nil)
+                    return
+                }
+                
+                guard let documents = querySnapshot?.documents, let document = documents.first else {
+                    print("No user found with username: \(username)")
+                    completion(nil)
+                    return
+                }
+                
+                let data = document.data()
+                let userID = document.documentID
+                
+                // Break down the initialization into smaller steps
+                let email = data["email"] as? String ?? ""
+                let firstName = data["firstName"] as? String ?? ""
+                let lastName = data["lastName"] as? String ?? ""
+                let major = data["major"] as? String ?? ""
+                let year = data["year"] as? String ?? ""
+                let profilePicture = data["profilePicture"] as? String ?? ""
+                let username = data["username"] as? String ?? ""
+                
+                // Create the user object
+                let user = OtherUser(
+                    uid: userID,
+                    email: email,
+                    firstName: firstName,
+                    lastName: lastName,
+                    major: major,
+                    year: year,
+                    profilePicture: profilePicture,
+                    username: username
+                )
+                
+                completion(user)
+            }
+    }
+
     //
     func timeAgoSince(_ timestamp: Timestamp) -> String {
         let date = timestamp.dateValue() // Convert Timestamp to Date

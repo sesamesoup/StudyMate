@@ -75,9 +75,7 @@ class MainMessageViewModel: ObservableObject {
                     }
                     //
                     self.recentMessages.insert(.init(documentID: docID, data: change.document.data()),at:0)
-                    //
-//                        self.recentMessages.append(.init(documentID: change.document.documentID, data: change.document.data()))
-//                    }
+
                 }
             }
         
