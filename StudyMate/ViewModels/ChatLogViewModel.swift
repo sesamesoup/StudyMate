@@ -70,25 +70,17 @@ class ChatLogViewModel: ObservableObject{
                     if documentChange.type == .added{
                         let data = documentChange.document.data()
                         self.chatMessages.append(ChatMessages(documentID: documentChange.document.documentID, data: data))
-
+                        
                     }
                 })
-                //
-//                querySnapshot?.documents.forEach({queryDocumentSnapshot in
-//                    let data = queryDocumentSnapshot.data()
-//                    // getting document id
-//                    let docID = queryDocumentSnapshot.documentID
-//                    let chatMessage = ChatMessages(documentID: docID, data: data)
-//                    self.chatMessages.append(chatMessage)
-//                    
-//                })
+                
                 DispatchQueue.main.async {
                     self.count+=1
                 }
                 
             }
         //
-       
+        
         
     }
     
@@ -123,10 +115,12 @@ class ChatLogViewModel: ObservableObject{
             }
             
         }
+        self.prsistRecentMessage()
         //
         print("Able to save mess in FromID")
         self.chatText = ""
         self.count+=1
+        
         //
         let recipientChatRef = db.collection("messages")
             .document(toID)
@@ -144,6 +138,40 @@ class ChatLogViewModel: ObservableObject{
         print("Able to save mess for reciever")
         print("Successfully SAVED message")
         
+    }
+    
+    //
+    func prsistRecentMessage(){
+        guard let fromID = Auth.auth().currentUser?.uid else { return }
+        //
+        guard let toID = self.recieverUser?.uid, !toID.isEmpty else {
+            print("Error: To ID is nil or empty.")
+            return
+        }
+        //
+        let document = Firestore.firestore().collection("recent_messages")
+            .document(fromID)
+            .collection("messages")
+            .document(toID)
+        print("In presistent Chat text is\(self.chatText)")
+        //
+        let data = [
+            "timestamp" : Timestamp(),
+            "text" : self.chatText,
+            "fromID":fromID,
+            "toID": toID,
+            "profileImage": self.recieverUser?.profilePicture ?? "",
+            "username": self.recieverUser?.username ?? ""
+        ] as [String : Any]
+        //
+        // Need to do something similar tanother dictionar for hte recipient of this message
+        //
+        document.setData(data) {error in
+            if let error {
+                print("Error: \(error)")
+                return
+            }
+        }
     }
 }
 

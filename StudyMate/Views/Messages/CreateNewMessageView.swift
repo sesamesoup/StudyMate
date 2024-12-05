@@ -51,6 +51,17 @@ struct OtherUser: Identifiable {
         self.profilePicture =  ""
         self.username =  ""
     }
+    // For the detail post
+    init(fromPost post: AllUserPosts) {
+        self.uid = post.userInfo.id
+        self.email = post.userInfo.email
+        self.firstName = post.userInfo.firstName
+        self.lastName = post.userInfo.lastName
+        self.major = post.userInfo.major
+        self.year = post.userInfo.year
+        self.profilePicture = post.userInfo.profilePicture
+        self.username = post.userInfo.username
+    }
 }
 
 

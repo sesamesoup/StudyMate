@@ -51,41 +51,7 @@ import Firebase
 //}
 
 //
-struct ChatUser{
-    let uid, email, firstName, lastName, major, year,profilePicture: String
-}
 
-
-class MainMessageViewModel: ObservableObject {
-    @Published var errorMessage: String = ""
-    @Published var chatUser: ChatUser?
-    init(){
-    // fetch the current user
-        fetchCurrentUser()
-    }
-    func fetchCurrentUser(){
-        guard let userId = Auth.auth().currentUser?.uid else {
-            print("Unable to fetch current user")
-            return
-        }
-        // Getting the current user
-        Firestore.firestore().collection("users").document(userId).getDocument { (snapshot, error) in
-            if let error = error  {
-                print("Error fetching current user: \(error)")
-                return
-            }
-            guard let data = snapshot?.data() else {
-                print("No data found")
-                return
-            }
-            print(data)
-            //
-            self.chatUser = ChatUser(uid: userId, email: data["email"] as? String ?? "", firstName: data["firstName"] as? String ?? "", lastName: data["lastName"] as? String ?? "", major: data["major"] as? String ?? "", year: data["year"] as? String ?? "", profilePicture: data["profilePicture"] as? String ?? "")
-        }
-    }
-    
-    
-}
 
 struct InboxView: View {
     // Creating ViewModel
@@ -144,11 +110,11 @@ struct InboxView: View {
                 //===============================================
                 Spacer()
                     .frame(height: 50)
-                // If chat found
-                if (true){
+                // --------------------- If chat found ---------------------------
+                if (!vm.recentMessages.isEmpty){
                     ScrollView() {
                         VStack {
-                            ForEach(0..<10, id: \.self) { num in
+                            ForEach(vm.recentMessages) { recentMessage in
                                 // Row
                                 NavigationLink{
                                     //Text("Destination")
@@ -157,16 +123,31 @@ struct InboxView: View {
                                     
                                     VStack {
                                         HStack(spacing:16){
-                                            Image(systemName: "person.fill")
-                                                .font(.system(size: 32))
+//                                            Image(systemName: "person.fill")
+//                                            Image(recentMessage.profileImage)
+//                                                .font(.system(size: 32))
+                                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                                .aspectRatio(1.2, contentMode: .fill)
+                                                .overlay(
+                                                    Image(recentMessage.profileImage)
+                                                        .resizable()
+                                                        .scaledToFill()
+                                                        .offset(x: -4.0, y: 0.0)
+                                                )
+                                                .frame(width: 40, height: 40, alignment: .leading)
+                                                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+
                                             //
                                             VStack(alignment: .leading){
-                                                Text("Username")
-                                                Text("MessageSent")
+                                                Text("\(recentMessage.username)")
+                                                Text("\(recentMessage.text)")
+                                                    .font(.system(size: 12))
+                                                    .multilineTextAlignment(.leading)
                                             }
                                             
                                             Spacer()
-                                            Text("Date Last sent")
+//                                            Text("Date Last sent")
+                                            Text(timeAgoSince(recentMessage.timestamp))
                                         }
                                     }
                                 }
@@ -179,7 +160,7 @@ struct InboxView: View {
                 }
                 // --------------------- If no chat found ----------------------------
                 else {
-                    Text("Nothing here to see!")
+                    Text("Start a new message by clicking on the plus icon!")
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 
@@ -188,6 +169,24 @@ struct InboxView: View {
             }
             .padding(30)
             
+        }
+    }
+    //
+    func timeAgoSince(_ timestamp: Timestamp) -> String {
+        let date = timestamp.dateValue() // Convert Timestamp to Date
+        let now = Date()
+        let calendar = Calendar.current
+        
+        let components = calendar.dateComponents([.minute, .hour, .day], from: date, to: now)
+        
+        if let day = components.day, day > 0 {
+            return day == 1 ? "1 day ago" : "\(day) days ago"
+        } else if let hour = components.hour, hour > 0 {
+            return hour == 1 ? "1 hour ago" : "\(hour) hours ago"
+        } else if let minute = components.minute, minute > 0 {
+            return minute == 1 ? "1 minute ago" : "\(minute) minutes ago"
+        } else {
+            return "Just now"
         }
     }
 }

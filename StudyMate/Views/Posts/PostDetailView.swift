@@ -109,7 +109,7 @@ struct PostDetailView: View {
                     
                     Spacer()
                     // Message Part Here
-//                    NavigationLink(destination: NewMessageView(post: post)) {
+//                    NavigationLink(destination: ChatLogView(chatUser: OtherUser(fromPost: post))) {
 //                        HStack(spacing: 12) {
 //                            Text("Message")
 //                                .bold()
@@ -126,6 +126,8 @@ struct PostDetailView: View {
 //                        .foregroundStyle(.beige)
 //                        .frame(maxWidth: .infinity, alignment: .trailing)
 //                    }
+                    
+
                     HStack(spacing: 12) {
                         Text("Message")
                             .bold()
