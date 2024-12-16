@@ -1,17 +1,18 @@
 # StudyMate
 
 <p align="center">
-  
-<img align="center" width="100" src="https://github.com/user-attachments/assets/f01a97a0-4849-47b6-936b-8b5f8f2f6425"></img>
-<img align="center" width="100" src="https://github.com/user-attachments/assets/ef4a4ec5-3fd3-4193-9f6d-c7b73e0ba8ad"></img>
-<img align="center" width="100" src="https://github.com/user-attachments/assets/e1ff7467-28f5-4a2d-8d7f-526218b030a6"></img>
-<img align="center" width="100" src="https://github.com/user-attachments/assets/ddda6fcf-692b-48b7-844d-0f7a5033efcf"></img>
-<img align="center" width="100" src="https://github.com/user-attachments/assets/02523625-8497-475c-9ee8-89e04a911a9a"></img>
-<img align="center" width="100" src="https://github.com/user-attachments/assets/6c51c9f1-c272-47a9-816e-59ca5db300b8"></img>
-<img align="center" width="100" src="https://github.com/user-attachments/assets/9bc5a9bd-88f2-47fe-a829-d09427ff7ea0"></img>
-<img align="center" width="100" src="https://github.com/user-attachments/assets/22c3153c-f416-4d49-b559-ce287545482e"></img>
-<img align="center" width="100" src="https://github.com/user-attachments/assets/3874864f-7d54-4ee9-b94c-f7abd5cfcf78"></img>
-<img align="center" width="100" src="https://github.com/user-attachments/assets/1ef1fb98-733d-4dcc-999e-58ef0f1dff7a"></img>
+
+<img align="center" width="100" src="https://github.com/user-attachments/assets/7a68e163-3751-48c4-a007-50f0825c153a"></img>
+<img align="center" width="100" src="https://github.com/user-attachments/assets/2a1551b4-8ceb-47f4-8a76-f53560347b14"></img>
+<img align="center" width="100" src="https://github.com/user-attachments/assets/6ef3a819-f020-46ad-9e3a-4944a3d87a83"></img>
+<img align="center" width="100" src="https://github.com/user-attachments/assets/cd8f7b79-662f-4d8f-b14e-d90e1857fcde"></img>
+<img align="center" width="100" src="https://github.com/user-attachments/assets/02cf3cd8-66a2-41f1-b662-feb0e2c98df0"></img>
+<img align="center" width="100" src="https://github.com/user-attachments/assets/3e0424e9-f43d-401e-9af7-bc02ef126bcc"></img>
+<img align="center" width="100" src="https://github.com/user-attachments/assets/78dd7335-e20d-4caa-98c6-3083d4f1dd7a"></img>
+<img align="center" width="100" src="https://github.com/user-attachments/assets/c9511180-4dc8-40d7-957f-6f94f054fd14"></img>
+<img align="center" width="100" src="https://github.com/user-attachments/assets/8efec7f6-5353-481e-8a24-c04461db2c57"></img>
+<img align="center" width="100" src="https://github.com/user-attachments/assets/38456e84-3e65-4a24-bdd6-d51e0d51c206"></img>
+<img align="center" width="100" src="https://github.com/user-attachments/assets/bfded76c-0a32-4574-ad22-7bdd63ad20ed"></img>
 </p>
 
 Real-time messaging social media app to find other students at UH to study with and find help with assignments.
